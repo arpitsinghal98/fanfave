@@ -135,6 +135,83 @@ button:hover {
   .input-group.half-width:nth-child(2n) {
     margin-right: 0;
   }
+
+  .signup-box h2 {
+    font-size: 2rem; /* smaller font-size for the header */
+    margin-bottom: 1rem;
+  }
+  
+  /* Styling for the sports options */
+  .sports-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Creates a responsive grid layout */
+    gap: 10px; /* Spacing between buttons */
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+  }
+  
+  .sport-option {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 15px; /* Smoother border radius */
+    background-color: #fff;
+    color: #333;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    text-align: center;
+  }
+  
+  .sport-option.selected {
+    background-color: #e74c3c; /* Highlight color for selected */
+    color: #fff;
+    border-color: #e74c3c;
+  }
+  
+  /* Adjust the size of the signup button to match the rest of the design */
+  .signup-box button[type="submit"] {
+    padding: 12px 30px; /* Slightly larger padding */
+    font-size: 1.125rem; /* Larger font size */
+    margin-top: 20px; /* More space above the button */
+    width: auto; /* Let the width be content-based */
+    background-color: #e74c3c; /* Matching the highlight color */
+    border-radius: 20px; /* Consistent border-radius with sport-option */
+  }
+  
+  /* Ensure the 'Already have an account? Login' text is styled appropriately */
+  .signup-box .login-link {
+    margin-top: 2rem; /* Additional space from the signup button */
+    font-size: 0.9rem;
+  }
+  
+  .signup-box .login-link a {
+    color: #2980b9;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  
+  .signup-box .login-link a:hover {
+    text-decoration: underline;
+  }
+
+  .interests-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 10px; /* Spacing between items */
+    margin-bottom: 20px;
+  }
+  
+  .interests-option {
+    display: flex;
+    align-items: center;
+  }
+  
+  .interests-option input[type="checkbox"] {
+    margin-right: 5px; /* Spacing between checkbox and label */
+  }
+  
   
   /* Responsive adjustments */
   @media (max-width: 768px) {
