@@ -42,10 +42,21 @@ const HomePage = () => {
       });
   }, []);
 
-  const handleSearch = (event) => {
-    // Implementation for search functionality
-    console.log(event.target.value);
-  };
+  async function handleSearch(event) {
+    const searchTerm = event.target.value; // Retrieve the search term from the input field
+    try {
+      const response = await fetch(`/api/searchevents?query=${encodeURIComponent(searchTerm)}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch events');
+      }
+      const events = await response.json();
+      // Handle the received events data, such as updating state or rendering them on the UI
+      console.log('Events:', events);
+    } catch (error) {
+      console.error('Error searching events:', error);
+      // Handle error (e.g., show error message to the user)
+    }
+  }
 
   // Let's assume this function will be used for fetching and displaying recommended events.
   const getRecommendedEvents = () => {
@@ -83,9 +94,13 @@ const HomePage = () => {
         <section className="search-bar-section">
           <input
             type="text"
-            className="search-input" // Added class for styling the input
+            className="search-input"
             placeholder="Search for sports events, teams, venues..."
-            onChange={handleSearch}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch(e);
+              }
+            }}
           />
         </section>
         <section className="recommended-events content-area">

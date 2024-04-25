@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const { Client } = require('@elastic/elasticsearch');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const { isDataView } = require('util/types');
 require('dotenv').config();
 
 const app = express();
@@ -148,12 +149,51 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
     }
 });
 
+app.get('/api/searchevents', async (req, res) => {
+
+    const { query } = req.query;
+    try {
+        const response = await esClient.search({
+            index: 'events',
+            body: {
+                query: {
+                    bool: {
+                        must: [
+                            {
+                                multi_match: {
+                                    query: query,
+                                    fields: ["*"]
+                                }
+                            },
+                            {
+                                range: {
+                                    date: {
+                                        gte: "now"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        });
+
+        const events = response.hits.hits.map(hit => hit._source);
+        console.log(response);
+        res.json(events);
+    } catch (error) {
+        console.error('Error searching events:', error);
+        res.status(500).json({ error: 'Failed to search events' });
+    }
+});
+
+
 app.get('/api/upcoming-events', async (req, res) => {
     try {
         const today = new Date().toISOString();
         const todayUtc = today.slice(0, 10);
 
-        
+
         const response = await esClient.search({
             index: 'events',
             body: {
