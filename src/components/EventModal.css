@@ -3,12 +3,12 @@
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75); /* Darkened backdrop */
-    z-index: 1050; /* Above other content */
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent backdrop */
     justify-content: center;
     align-items: center;
+    z-index: 1050; /* Above other content */
   }
   
   .create-event-modal-backdrop.show {
@@ -17,93 +17,63 @@
   
   .create-event-modal {
     background: #FFFFFF; /* White background for the modal */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
-    margin: 105px; /* To ensure there's space around the modal */
-    overflow-y: auto; /* Enable scroll if content overflows */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    width: 50%;
+    max-width: 640px;
+    box-sizing: border-box;
+    overflow-y: auto; /* Enable scroll for overflowing content */
   }
   
   .create-event-modal-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 20px;
     color: black;
     text-align: center;
   }
   
-  .create-event-modal-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  
   .modal-close-button {
-    border: none;
     background: none;
+    border: none;
     font-size: 1.5rem;
     cursor: pointer;
   }
   
   .create-event-form {
-    display: grid;
-    gap: 20px;
-    width: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
   
   .form-row {
     display: flex;
-    flex-direction: column;
-  }
-  
-  .form-row.half {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-  .form-row.half {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns of equal width */
-    gap: 40px; /* Space between columns */
-    margin-bottom: 20px; /* Optional: space between rows */
-    margin-right: 20px;
+    gap: 15px;
   }
   
   .form-row.full {
-    gap: 40px; /* Space between columns */
-    margin-bottom: 20px; /* Optional: space between rows */
-    margin-right: 20px;
-  }
-
-  /* If you have responsive design needs, ensure to handle the layout for smaller screens */
-  @media (max-width: 768px) {
-    .form-row.half {
-      grid-template-columns: 1fr; /* Stack the inputs vertically on smaller screens */
-      gap: 10px; /* Adjust gap for smaller screen if necessary */
-    }
-  }
-  
-  .form-row.full input,
-  .form-row.full textarea {
-    width: 100%;
+    flex-direction: column;
   }
   
   .form-row.half input,
-  .form-row.half .image-upload-container {
-    width: 100%;
+  .form-row.half div {
+    flex: 1;
   }
   
-  input, textarea {
+  input[type="text"],
+  input[type="datetime-local"],
+  input[type="number"],
+  textarea {
     padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
     font-size: 0.9rem;
   }
   
   textarea {
-    height: 120px; /* Adjust height as needed */
     resize: vertical;
+    height: 100px;
   }
   
   .image-upload-container {
@@ -111,40 +81,42 @@
   }
   
   .image-upload-label {
-    display: block;
-    padding: 10px;
-    text-align: center;
-    background-color: #f8f8f8;
-    border: 2px dashed #dcdcdc;
+    display: inline-block;
+    padding: 10px 20px;
+    border: 2px dashed #ccc;
+    color: #888;
+    border-radius: 5px;
     cursor: pointer;
-    color: grey;
+    text-align: center;
+    width: calc(100% - 41px); /* Adjust width based on padding and border */
+    box-sizing: border-box;
   }
   
   .image-upload-input {
+    opacity: 0;
     position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0;
     cursor: pointer;
   }
   
   .image-upload-instruction {
-    margin-top: 8px;
     font-size: 0.8rem;
     text-align: center;
-    color: grey;
+    margin-top: 5px;
   }
   
   .modal-save-button {
+    padding: 12px 20px;
     background-color: #007bff;
-    color: white;
-    padding: 15px 20px;
+    color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background-color 0.3s ease;
   }
   
   .modal-save-button:hover {
@@ -153,11 +125,15 @@
   
   @media (max-width: 768px) {
     .create-event-modal {
-      width: 80vw;
+      width: 80%;
     }
   
     .form-row.half {
-      grid-template-columns: 1fr;
+      flex-direction: column;
+    }
+  
+    .image-upload-label {
+      width: auto;
     }
   }
   

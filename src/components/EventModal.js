@@ -28,21 +28,31 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
         setEventData({ ...eventData, image: file });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // FormData is used for multipart/form-data for file uploads
         const formData = new FormData();
         Object.keys(eventData).forEach(key => {
-            formData.append(key, eventData[key]);
+          formData.append(key, eventData[key]);
         });
-
-        // You'd need to replace this console.log with your actual save logic
-        console.log('Event Data:', eventData);
-        onSave(formData); // Pass the form data up for submission
-
-        onClose(); // Close the modal
-    };
+      
+        try {
+          const response = await fetch('/api/createEvent', {
+            method: 'POST',
+            body: formData, 
+          });
+      
+          if (response.ok) {
+            console.log('Event created successfully');
+            onClose(); 
+          } else {
+            console.error('Failed to create event:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Error submitting form:', error);
+        }
+      };
+      
 
     return (
         <div className={`create-event-modal-backdrop ${isVisible ? 'show' : ''}`}>

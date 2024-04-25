@@ -1,16 +1,30 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 const { Client } = require('@elastic/elasticsearch');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './src/images/');
+    },
+    filename: function (req, file, cb) {
+        const fileName = `${req.body.sportType}_${uuidv4()}${path.extname(file.originalname)}`;
+        cb(null, fileName);
+    }
+});
 
-const client = new Client({
+const upload = multer({ storage: storage });
+
+const esClient = new Client({
     node: 'http://localhost:9200'
 });
 
@@ -43,7 +57,7 @@ app.post('/api/signup', async (req, res) => {
     const userDoc = { firstName, lastName, email, password: hashedPassword, interests };
 
     try {
-        const response = await client.index({
+        const response = await esClient.index({
             index: 'users',
             body: userDoc
         });
@@ -58,7 +72,7 @@ app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const response = await client.search({
+        const response = await esClient.search({
             index: 'users',
             body: {
                 query: {
@@ -85,27 +99,49 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-app.post('/api/createEvent', (req, res) => {
-    const event = new Event({
-        eventName: req.body.eventName,
-        description: req.body.description,
-        dateTime: req.body.dateTime,
-        location: req.body.location,
-        organizer: req.body.organizer,
-        sportType: req.body.sportType,
-        teams: req.body.teams,
-        ticketInfo: req.body.ticketInfo,
-        capacity: req.body.capacity
-    });
+app.post('/api/createEvent', upload.single('image'), async (req, res) => {
+    // Extract event data from the request body
+    const {
+        eventName,
+        description,
+        dateTime,
+        location,
+        organizer,
+        sportType,
+        teams,
+        ticketInfo,
+        capacity
+    } = req.body;
 
-    event.save()
-        .then(doc => {
-            res.status(201).send(doc);
-        })
-        .catch(err => {
-            console.error(err);
-            res.status(500).send("Error saving the event.");
+    // The path to the saved image
+    const imagePath = req.file ? `./src/images/${req.file.filename}` : null;
+    console.log('Arpit: ', imagePath);
+    // Create the event object
+    const eventDoc = {
+        eventName,
+        description,
+        dateTime,
+        location,
+        organizer,
+        sportType,
+        teams,
+        ticketInfo,
+        capacity,
+        image: imagePath
+    };
+
+    try {
+        // Index the event in Elasticsearch
+        const response = await esClient.index({
+            index: 'events',
+            body: eventDoc
         });
+
+        res.status(201).json({ message: 'Event created with image', eventDoc });
+    } catch (error) {
+        console.error('Error creating event:', error);
+        res.status(500).json({ error: 'Error saving event to Elasticsearch' });
+    }
 });
 
 const PORT = process.env.PORT || 9000;
