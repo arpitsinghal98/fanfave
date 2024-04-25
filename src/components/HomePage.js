@@ -1,8 +1,49 @@
-import React from 'react';
-import './HomePage.css'; // Make sure to include the corresponding CSS file
+import React, { useState, useEffect } from 'react';
+import EventModal from './EventModal';
+import './HomePage.css';
 
 const HomePage = () => {
-  // This function could be used for handling search input, for example.
+
+  const [latestNews, setLatestNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const saveEvent = (eventData) => {
+    // Perform the POST request to your server's /api/createEvent endpoint
+    console.log('Event Data to Save:', eventData);
+    // Close the modal after saving
+    closeModal();
+  };
+
+  useEffect(() => {
+    fetch('/api/news')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setLatestNews(data); // Assuming the backend sends only two articles
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Fetching news failed:", error);
+        setError('Failed to load news.');
+        setLoading(false);
+      });
+  }, []);
+
   const handleSearch = (event) => {
     // Implementation for search functionality
     console.log(event.target.value);
@@ -21,12 +62,23 @@ const HomePage = () => {
 
   const recommendedEvents = getRecommendedEvents();
 
+
   return (
     <div className="homepage-container">
       <div className="welcome-banner">
         <div className="welcome-banner-content">
           <h1>Welcome to FanFave</h1>
           <p>Your personalized sports event guide</p>
+          <div className="add-event-button-container">
+          <button onClick={openModal} className="add-event-button">
+            Add New Event
+          </button>
+        </div>
+        <EventModal
+          isVisible={isModalVisible}
+          onClose={closeModal}
+          onSave={saveEvent}
+        />
         </div>
       </div>
       <main>
@@ -50,10 +102,22 @@ const HomePage = () => {
             ))}
           </div>
         </section>
-
         <section className="latest-news content-area">
           <h2>Latest Sports News</h2>
-          {/* Include components or elements that will show the latest news */}
+          {loading && <p>Loading...</p>}
+          {error && <p>Error: {error}</p>}
+          {!loading && !error && (
+            <ul>
+              {latestNews.map((news, index) => (
+                <li key={index} className="news-item">
+                  <a href={news.url} target="_blank" rel="noopener noreferrer">
+                    <h3>{news.title}</h3>
+                  </a>
+                  <p>{news.description}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </main>
     </div>

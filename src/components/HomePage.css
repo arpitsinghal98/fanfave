@@ -162,4 +162,39 @@
     }
   }
   
+  .create-post-button, .create-event-button {
+    padding: 10px 20px;
+    background-color: #007bff; /* Bootstrap primary blue */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: background-color 0.3s ease;
+  }
+  
+  .create-post-button:hover, .create-event-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .add-event-button-container {
+    text-align: center; /* Center the button container */
+    padding: 20px; /* Add some padding around the button */
+  }
+  
+  .add-event-button {
+    background-color: #007bff; /* Primary color for the button */
+    color: #fff; /* White text color */
+    padding: 10px 20px; /* Padding inside the button */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners for the button */
+    font-size: 1rem; /* Font size for the button text */
+    cursor: pointer; /* Cursor to indicate the button is clickable */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  .add-event-button:hover {
+    background-color: #0056b3; /* Darken the button on hover */
+  }
   /* Add any additional styles for other elements or states */  

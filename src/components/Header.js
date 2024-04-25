@@ -17,7 +17,7 @@ const Header = () => {
         <div className="header-container">
             <header className="header">
                 <div className="brand-container">
-                    <a href="/home" onclick="navigateToHome()">
+                    <a href="/home" onClick="navigateToHome()">
                         <img src={companyLogo} alt="Company Logo" className="company-logo" />
                         <img src={companyNameImage} alt="Company Name" className="company-name-image" />
                     </a>

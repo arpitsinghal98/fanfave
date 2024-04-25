@@ -1,0 +1,163 @@
+.create-event-modal-backdrop {
+    display: none; /* Hidden by default, shown when 'show' class is added */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75); /* Darkened backdrop */
+    z-index: 1050; /* Above other content */
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .create-event-modal-backdrop.show {
+    display: flex; /* Show the modal */
+  }
+  
+  .create-event-modal {
+    background: #FFFFFF; /* White background for the modal */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+    margin: 105px; /* To ensure there's space around the modal */
+    overflow-y: auto; /* Enable scroll if content overflows */
+  }
+  
+  .create-event-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: black;
+    text-align: center;
+  }
+  
+  .create-event-modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .modal-close-button {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .create-event-form {
+    display: grid;
+    gap: 20px;
+    width: auto;
+  }
+  
+  .form-row {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-row.half {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .form-row.half {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns of equal width */
+    gap: 40px; /* Space between columns */
+    margin-bottom: 20px; /* Optional: space between rows */
+    margin-right: 20px;
+  }
+  
+  .form-row.full {
+    gap: 40px; /* Space between columns */
+    margin-bottom: 20px; /* Optional: space between rows */
+    margin-right: 20px;
+  }
+
+  /* If you have responsive design needs, ensure to handle the layout for smaller screens */
+  @media (max-width: 768px) {
+    .form-row.half {
+      grid-template-columns: 1fr; /* Stack the inputs vertically on smaller screens */
+      gap: 10px; /* Adjust gap for smaller screen if necessary */
+    }
+  }
+  
+  .form-row.full input,
+  .form-row.full textarea {
+    width: 100%;
+  }
+  
+  .form-row.half input,
+  .form-row.half .image-upload-container {
+    width: 100%;
+  }
+  
+  input, textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  
+  textarea {
+    height: 120px; /* Adjust height as needed */
+    resize: vertical;
+  }
+  
+  .image-upload-container {
+    position: relative;
+  }
+  
+  .image-upload-label {
+    display: block;
+    padding: 10px;
+    text-align: center;
+    background-color: #f8f8f8;
+    border: 2px dashed #dcdcdc;
+    cursor: pointer;
+    color: grey;
+  }
+  
+  .image-upload-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  .image-upload-instruction {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    text-align: center;
+    color: grey;
+  }
+  
+  .modal-save-button {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .modal-save-button:hover {
+    background-color: #0056b3;
+  }
+  
+  @media (max-width: 768px) {
+    .create-event-modal {
+      width: 80vw;
+    }
+  
+    .form-row.half {
+      grid-template-columns: 1fr;
+    }
+  }
+  
