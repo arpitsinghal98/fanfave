@@ -18,6 +18,46 @@ const Signup = () => {
         'NASCAR', 'Archery', 'Cricket', 'MotoGP', 'Kabaddi'
     ];
 
+    const isValidStep1 = (formData) => {
+        if (!formData.firstName || !formData.lastName || !formData.email || !formData.confirmEmail || !formData.password || !formData.confirmPassword) {
+            console.log("All fields must be filled out.");
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            console.log("Please enter a valid email address.");
+            return false;
+        }
+
+        if (formData.password.length < 8) {
+            console.log("Password must be at least 8 characters long.");
+            return false;
+        }
+
+        return true;
+    };
+
+    const sendSignupRequest = async (userDoc) => {
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userDoc),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            } else {
+                window.location.href = "/login";
+            }
+        } catch (error) {
+            console.error('There was an error creating the user:', error);
+        }
+    };
+
     const handleSelectSport = (sport) => {
         setFormData(prevFormData => ({
             ...prevFormData,
@@ -35,87 +75,100 @@ const Signup = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (step === 1) {
-            // Move to the next step
-            setStep(2);
+            if (isValidStep1(formData)) {
+                setStep(2);
+            } else {
+                alert("Please correct the errors in the form.");
+            }
         } else {
-            // Handle the final submission here
-            console.log(formData);
-            // You would typically send this data to your backend service
+            try {
+                await sendSignupRequest(formData);
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred during signup.");
+            }
         }
     };
 
     return (
-        <div className="signup-container">
-            <div className="signup-box">
-                {step === 1 && (
-                    <>
-                        <h2>Create Account</h2>
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-row">
-                                <div className="input-group half-width">
-                                    <label htmlFor="firstName">First Name</label>
-                                    <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
+        <div className="page-background">
+            <div className="signup-container">
+                <div className="signup-box">
+                    {step === 1 && (
+                        <>
+                            <h2 className="header2">Create Account</h2>
+                            <br />
+                            <form className="form" onSubmit={handleSubmit}>
+                                <div className="form-row">
+                                    <div className="input-group half-width">
+                                        <label className="label" htmlFor="firstName">First Name</label>
+                                        <input className="input-text" type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
+                                    </div>
+                                    <div className="input-group half-width">
+                                        <label className="label" htmlFor="lastName">Last Name</label>
+                                        <input className="input-text" type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
+                                    </div>
                                 </div>
-                                <div className="input-group half-width">
-                                    <label htmlFor="lastName">Last Name</label>
-                                    <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
-                                </div>
-                            </div>
 
-                            <div className="form-row">
-                                <div className="input-group half-width">
-                                    <label htmlFor="email">Email</label>
-                                    <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
+                                <div className="form-row">
+                                    <div className="input-group half-width">
+                                        <label className="label" htmlFor="email">Email</label>
+                                        <input className="input-email" type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
+                                    </div>
+                                    <div className="input-group half-width">
+                                        <label className="label" htmlFor="confirmEmail">Confirm Email</label>
+                                        <input className="input-email" type="email" id="confirmEmail" name="confirmEmail" value={formData.confirmEmail} onChange={handleChange} required />
+                                    </div>
                                 </div>
-                                <div className="input-group half-width">
-                                    <label htmlFor="confirmEmail">Confirm Email</label>
-                                    <input type="email" id="confirmEmail" name="confirmEmail" value={formData.confirmEmail} onChange={handleChange} required />
-                                </div>
-                            </div>
 
-                            <div className="form-row">
-                                <div className="input-group half-width">
-                                    <label htmlFor="password">Password</label>
-                                    <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required />
+                                <div className="form-row">
+                                    <div className="input-group half-width">
+                                        <label className="label" htmlFor="password">Password</label>
+                                        <input className="input-password" type="password" id="password" name="password" value={formData.password} onChange={handleChange} required />
+                                    </div>
+                                    <div className="input-group half-width">
+                                        <label className="label" htmlFor="confirmPassword">Confirm Password</label>
+                                        <input className="input-password" type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
+                                    </div>
                                 </div>
-                                <div className="input-group half-width">
-                                    <label htmlFor="confirmPassword">Confirm Password</label>
-                                    <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
-                                </div>
+                                <br />
+                                <button className="button" type="button" onClick={() => setStep(2)}>Next</button>
+                            </form>
+                        </>
+                    )}
+                    {step === 2 && (
+                        <>
+                            <h2 className="header2">Create Account</h2>
+                            <br />
+                            <h3>We wanna know you better. Please select the sport(s) in which you are interested.</h3>
+                            <br />
+                            <div className="interests-grid">
+                                {sportsOptions.map(sport => (
+                                    <div key={sport} className="interests-option">
+                                        <input
+                                            type="checkbox"
+                                            id={sport}
+                                            name="interests"
+                                            value={sport}
+                                            checked={formData.interests.includes(sport)}
+                                            onChange={() => handleSelectSport(sport)}
+                                        />
+                                        <label htmlFor={sport}>{sport}</label>
+                                    </div>
+                                ))}
                             </div>
-
-                            <button type="button" onClick={() => setStep(2)}>Next</button>
-                        </form>
-                    </>
-                )}
-                {step === 2 && (
-                    <>
-                        <h2>We want to know you better. Please select the sports in which you are interested.</h2>
-                        <div className="interests-grid">
-                            {sportsOptions.map(sport => (
-                                <div key={sport} className="interests-option">
-                                    <input
-                                        type="checkbox"
-                                        id={sport}
-                                        name="interests"
-                                        value={sport}
-                                        checked={formData.interests.includes(sport)}
-                                        onChange={() => handleSelectSport(sport)}
-                                    />
-                                    <label htmlFor={sport}>{sport}</label>
-                                </div>
-                            ))}
-                        </div>
-                        <button type="button" onClick={() => setStep(1)}>Back</button>
-                        <br/>
-                        <br/>
-                        <button type="button" onClick={handleSubmit}>Sign Up</button>
-                    </>
-                )}
-                <p className="login-link">Already have an account? <a href="/">Login</a></p>
+                            <button className="button" type="button" onClick={handleSubmit}>Sign Up</button>
+                            <br />
+                            <br />
+                            <p className="link-text">Missed Something? <a href="#" className="link-anchor" onClick={() => setStep(1)}>Go Back</a></p>
+                        </>
+                    )}
+                    <p className="login-link-text">Already have an account? <a className="link" href="/login">Login</a></p>
+                </div>
             </div>
         </div>
     );

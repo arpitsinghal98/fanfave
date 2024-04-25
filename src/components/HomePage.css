@@ -1,0 +1,165 @@
+.homepage-container {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  
+  .welcome-banner {
+    background-image: url('../images/BackgroundImage.png');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    text-align: center;
+    padding: 100px 50px;
+    position: relative; /* Add position to allow absolute positioning inside */
+  }
+  
+  /* Overlay to improve text readability */
+  .welcome-banner:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.2); /* Semi-transparent overlay */
+    z-index: 0;
+  }
+  
+  /* Container for the text to position it above the pseudo-element */
+  .welcome-banner-content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .welcome-banner h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7); /* Increased text shadow for better visibility */
+  }
+  
+  .welcome-banner p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    font-weight: 300;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Increased text shadow for better visibility */
+  }  
+
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .content-area {
+    background-color: #f9f9f9; /* Light grey background for a subtle look */
+    color: #333; /* Dark text for contrast */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  
+  .search-bar-section {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .search-input {
+    width: 40%;
+    padding: 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .search-input:focus {
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .search-bar-section input {
+    width: 40%;
+    padding: 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .search-bar-section input:focus {
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .recommended-events {
+    padding: 3rem 1rem;
+    text-align: center;
+  }
+  
+  .recommended-events h2 {
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .events-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .event-card {
+    width: 280px; /* Slightly reduced width */
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    cursor: pointer; /* Indicate these are clickable */
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .latest-news {
+    padding: 2rem 1rem;
+    background-color: #fff; /* White background to differentiate from the events section */
+  }
+  
+  .latest-news h2 {
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .news-item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee; /* Separator for each news item */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .search-bar-section input {
+      width: 80%;
+    }
+  
+    .events-list {
+      flex-direction: column;
+    }
+  
+    .welcome-banner h1 {
+      font-size: 2rem;
+    }
+  
+    .welcome-banner p {
+      font-size: 1rem;
+    }
+  }
+  
+  /* Add any additional styles for other elements or states */  
