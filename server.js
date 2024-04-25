@@ -105,7 +105,8 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
     const {
         eventName,
         description,
-        dateTime,
+        date,
+        time,
         location,
         organizer,
         sportType,
@@ -115,14 +116,15 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
     } = req.body;
 
     // The path to the saved image
-    const dateTimeUTC = new Date(dateTime).toISOString();
+
     const imagePath = req.file ? `./src/images/${req.file.filename}` : null;
 
     // Create the event object
     const eventDoc = {
         eventName,
         description,
-        dateTime: dateTimeUTC,
+        date,
+        time,
         location,
         organizer,
         sportType,
@@ -148,26 +150,24 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
 
 app.get('/api/upcoming-events', async (req, res) => {
     try {
-        // Get today's date in YYYY-MM-DD format
-        const today = new Date().toISOString(); // Get current date and time in ISO format
-const todayUtc = today.slice(0, 10) + 'T00:00';
-console.log(todayUtc)
+        const today = new Date().toISOString();
+        const todayUtc = today.slice(0, 10);
+
         
-        // Query Elasticsearch to fetch upcoming events
         const response = await esClient.search({
-            index: 'events', // Replace with your Elasticsearch index containing events
+            index: 'events',
             body: {
                 query: {
                     range: {
                         date: {
-                            gte: todayUtc // Fetch events with date greater than or equal to today
+                            gte: todayUtc
                         }
                     }
                 }
             }
         });
 
-        console.log('Elasticsearch Response:', response); // Log the Elasticsearch response
+        console.log('Elasticsearch Response:', response);
 
         // Send the response back to the client
         res.json(response);

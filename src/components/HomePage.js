@@ -40,11 +40,6 @@ const HomePage = () => {
         setError('Failed to load news.');
         setLoading(false);
       });
-
-      fetch('/api/upcoming-events')
-        .then((response) => {
-          if(!respsone)
-        })
   }, []);
 
   const handleSearch = (event) => {

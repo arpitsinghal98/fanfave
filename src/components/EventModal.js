@@ -5,7 +5,8 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
     const [eventData, setEventData] = useState({
         eventName: '',
         description: '',
-        dateTime: '',
+        date: '',
+        time:'',
         location: '',
         organizer: '',
         sportType: '',
@@ -33,26 +34,26 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
 
         const formData = new FormData();
         Object.keys(eventData).forEach(key => {
-          formData.append(key, eventData[key]);
+            formData.append(key, eventData[key]);
         });
-      
+
         try {
-          const response = await fetch('/api/createEvent', {
-            method: 'POST',
-            body: formData, 
-          });
-      
-          if (response.ok) {
-            console.log('Event created successfully');
-            onClose(); 
-          } else {
-            console.error('Failed to create event:', response.statusText);
-          }
+            const response = await fetch('/api/createEvent', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                console.log('Event created successfully');
+                onClose();
+            } else {
+                console.error('Failed to create event:', response.statusText);
+            }
         } catch (error) {
-          console.error('Error submitting form:', error);
+            console.error('Error submitting form:', error);
         }
-      };
-      
+    };
+
 
     return (
         <div className={`create-event-modal-backdrop ${isVisible ? 'show' : ''}`}>
@@ -66,22 +67,25 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
                         <input type="text" name="eventName" placeholder="Event Name" onChange={handleChange} required />
                     </div>
                     <div className="form-row half">
-                        <input type="datetime-local" name="dateTime" onChange={handleChange} required />
-                        <input type="text" name="location" placeholder="Location" onChange={handleChange} required />
+                        <input type="date" name="date" onChange={handleChange} required />
+                        <input type="number" name="capacity" placeholder="Capacity" onChange={handleChange} required />
                     </div>
                     <div className="form-row half">
-                        <input type="text" name="organizer" placeholder="Organizer" onChange={handleChange} required />
+
+                        <input type="time" name="time" onChange={handleChange} required />
                         <input type="text" name="sportType" placeholder="Sport Type" onChange={handleChange} required />
                     </div>
                     <div className="form-row half">
-                        <input type="text" name="teams" placeholder="Teams" onChange={handleChange} />
+
                         <input type="text" name="ticketInfo" placeholder="Ticket Information" onChange={handleChange} />
                     </div>
                     <div className="form-row full">
+                        <input type="text" name="location" placeholder="Location" onChange={handleChange} required />
+                        <input type="text" name="teams" placeholder="Teams" onChange={handleChange} />
+                        <input type="text" name="organizer" placeholder="Organizer" onChange={handleChange} required />
                         <textarea name="description" placeholder="Description" onChange={handleChange} required />
                     </div>
                     <div className="form-row half">
-                        <input type="number" name="capacity" placeholder="Capacity" onChange={handleChange} required />
                         <div className="image-upload-container">
                             <label htmlFor="image-upload" className="image-upload-label">
                                 Upload Event Image
