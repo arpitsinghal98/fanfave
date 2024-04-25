@@ -27,7 +27,10 @@ const Login = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       else {
+        const data = await response.json();
+        const userInterests = data.interests;
         localStorage.setItem('login', 'true');
+        localStorage.setItem('interests',userInterests);
         window.location.href = "/home";
       }
     } catch (error) {

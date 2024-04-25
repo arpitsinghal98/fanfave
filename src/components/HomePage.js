@@ -19,9 +19,7 @@ const HomePage = () => {
   };
 
   const saveEvent = (eventData) => {
-    // Perform the POST request to your server's /api/createEvent endpoint
     console.log('Event Data to Save:', eventData);
-    // Close the modal after saving
     closeModal();
   };
 
@@ -34,7 +32,7 @@ const HomePage = () => {
         return response.json();
       })
       .then((data) => {
-        setLatestNews(data); // Assuming the backend sends only two articles
+        setLatestNews(data);
         setLoading(false);
       })
       .catch((error) => {
@@ -42,6 +40,11 @@ const HomePage = () => {
         setError('Failed to load news.');
         setLoading(false);
       });
+
+      fetch('/api/upcoming-events')
+        .then((response) => {
+          if(!respsone)
+        })
   }, []);
 
   const handleSearch = (event) => {
@@ -70,15 +73,15 @@ const HomePage = () => {
           <h1>Welcome to FanFave</h1>
           <p>Your personalized sports event guide</p>
           <div className="add-event-button-container">
-          <button onClick={openModal} className="add-event-button">
-            Add New Event
-          </button>
-        </div>
-        <EventModal
-          isVisible={isModalVisible}
-          onClose={closeModal}
-          onSave={saveEvent}
-        />
+            <button onClick={openModal} className="add-event-button">
+              Add New Event
+            </button>
+          </div>
+          <EventModal
+            isVisible={isModalVisible}
+            onClose={closeModal}
+            onSave={saveEvent}
+          />
         </div>
       </div>
       <main>
@@ -110,10 +113,15 @@ const HomePage = () => {
             <ul>
               {latestNews.map((news, index) => (
                 <li key={index} className="news-item">
-                  <a href={news.url} target="_blank" rel="noopener noreferrer">
-                    <h3>{news.title}</h3>
-                  </a>
-                  <p>{news.description}</p>
+                  <div className="news-item-container">
+                    <img src={news.urlToImage} alt={news.title} className="news-image" />
+                    <div className="news-text">
+                      <a href={news.url} target="_blank" rel="noopener noreferrer">
+                        <h3>{news.title}</h3>
+                      </a>
+                      <p>{news.description}</p>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>

@@ -6,6 +6,7 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const { Client } = require('@elastic/elasticsearch');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
@@ -89,7 +90,7 @@ app.post('/api/login', async (req, res) => {
         const isValid = await bcrypt.compare(password, hashedPassword);
 
         if (isValid) {
-            res.json({ message: 'Login successful' });
+            res.json({ message: 'Login successful', interests: response.hits.hits[0]._source.interests });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -114,13 +115,14 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
     } = req.body;
 
     // The path to the saved image
+    const dateTimeUTC = new Date(dateTime).toISOString();
     const imagePath = req.file ? `./src/images/${req.file.filename}` : null;
-    console.log('Arpit: ', imagePath);
+
     // Create the event object
     const eventDoc = {
         eventName,
         description,
-        dateTime,
+        dateTime: dateTimeUTC,
         location,
         organizer,
         sportType,
@@ -143,6 +145,38 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
         res.status(500).json({ error: 'Error saving event to Elasticsearch' });
     }
 });
+
+app.get('/api/upcoming-events', async (req, res) => {
+    try {
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString(); // Get current date and time in ISO format
+const todayUtc = today.slice(0, 10) + 'T00:00';
+console.log(todayUtc)
+        
+        // Query Elasticsearch to fetch upcoming events
+        const response = await esClient.search({
+            index: 'events', // Replace with your Elasticsearch index containing events
+            body: {
+                query: {
+                    range: {
+                        date: {
+                            gte: todayUtc // Fetch events with date greater than or equal to today
+                        }
+                    }
+                }
+            }
+        });
+
+        console.log('Elasticsearch Response:', response); // Log the Elasticsearch response
+
+        // Send the response back to the client
+        res.json(response);
+    } catch (error) {
+        console.error('Error fetching upcoming events:', error);
+        res.status(500).json({ error: 'An error occurred while fetching upcoming events' });
+    }
+});
+
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {

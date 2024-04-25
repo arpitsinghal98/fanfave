@@ -141,6 +141,7 @@
     padding: 1rem;
     margin-bottom: 1rem;
     border-bottom: 1px solid #eee; /* Separator for each news item */
+    height: 130px;
   }
   
   /* Responsive Design */
@@ -172,6 +173,12 @@
     cursor: pointer;
     margin: 10px 0;
     transition: background-color 0.3s ease;
+  }
+  .news-image {
+    width: 200px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 10px; /* Add some space between the image and text */
+    float: left; /* Float the image to the left */
   }
   
   .create-post-button:hover, .create-event-button:hover {
