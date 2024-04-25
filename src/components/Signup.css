@@ -111,11 +111,13 @@
     display: flex;
   justify-content: space-between;
     flex-wrap: wrap;
+    margin-right: 20px;
   }
   
   .input-group {
     flex: 1; /* Allows input groups to fill the space of their container */
     margin-bottom: 1rem; /* Space between each row */
+    margin-right: 25px;
   }
   
   /* Adjust padding/margin for the individual input elements */

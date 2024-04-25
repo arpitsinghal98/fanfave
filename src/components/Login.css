@@ -45,6 +45,7 @@
 .input-group {
   margin-bottom: 1rem;
   position: relative;
+  margin-right: 20px;
 }
 
 .input-label {
