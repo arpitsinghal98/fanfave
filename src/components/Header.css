@@ -1,0 +1,95 @@
+.header-container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  position: relative;
+  /* Position relative to allow absolute positioning inside */
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  /* Adjust the thickness as desired */
+  background-color: red;
+  /* The color of the sporty stripe */
+  z-index: 1;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  margin-left: 200px;
+}
+
+.company-logo {
+  width: 70px;
+  /* Or your preferred size */
+  height: auto;
+  margin-right: 10px;
+}
+
+.company-name-image {
+  height: 70px;
+  width: auto;
+}
+
+.company-name {
+  margin-left: 10px;
+  font-size: 24px;
+  /* Adjust size accordingly */
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  margin-right: 200px;
+}
+
+.social-icon {
+  margin-right: 10px;
+  /* Add additional styling for icons */
+}
+
+.login-link {
+  margin-right: 15px;
+  color: red;
+  font-size: x-large;
+}
+
+.logout-banner {
+  background-color: red;
+  /* Coral color */
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translate(-50%, 20px);
+  z-index: 999;
+  animation: slideDown 0.50s ease forwards;
+  font-size: 18px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
