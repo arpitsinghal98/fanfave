@@ -7,7 +7,7 @@ const HomePage = () => {
   const [latestNews, setLatestNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [recommend, setrecommend] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
 
   const openModal = () => {
@@ -58,18 +58,32 @@ const HomePage = () => {
     }
   }
 
+  
+
   // Let's assume this function will be used for fetching and displaying recommended events.
-  const getRecommendedEvents = () => {
-    // Logic to fetch recommended events
-    // This could be replaced with actual API call logic.
-    return [
-      { id: 1, name: 'Basketball Championship', date: '2024-06-10' },
-      { id: 2, name: 'Local Baseball Derby', date: '2024-06-15' },
-      // More events...
-    ];
+  async function getRecommendedEvents() {
+    try {
+      const response = await fetch('http://localhost:9000/recommend-per-sport-events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update user profile');
+      }
+      const data = await response.json();
+      console.log(data)
+      setrecommend(data.response)
+      
+    } catch (error) {
+      console.error('Error updating user:', error);
+      alert('Failed to update profile');
+    }
+    
   };
 
-  const recommendedEvents = getRecommendedEvents();
 
 
   return (
@@ -105,14 +119,18 @@ const HomePage = () => {
         </section>
         <section className="recommended-events content-area">
           <h2>Recommended for You</h2>
+          {/* <button onClick={getRecommendedEvents()}>Recommend Personalized Sports Events</button> */}
+          <div className="container">
+            {/* Button to fetch response from ChatGPT */}
+            <button onClick={getRecommendedEvents} className="fetch-button">
+                Recommend Personalized Sports Events
+            </button>
+            {/* Rectangle area to display the response */}
+            <div className="response-box">
+            <p>{recommend}</p>
+            </div>
+        </div>
           <div className="events-list">
-            {recommendedEvents.map(event => (
-              <div key={event.id} className="event-card">
-                <h3>{event.name}</h3>
-                <p>Date: {event.date}</p>
-                {/* Add more event details and actions here */}
-              </div>
-            ))}
           </div>
         </section>
         <section className="latest-news content-area">
