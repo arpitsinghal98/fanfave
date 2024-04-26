@@ -102,7 +102,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 app.post('/api/createEvent', upload.single('image'), async (req, res) => {
-    // Extract event data from the request body
+    
     const {
         eventName,
         description,
@@ -116,11 +116,8 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
         capacity
     } = req.body;
 
-    // The path to the saved image
-
     const imagePath = req.file ? `./src/images/${req.file.filename}` : null;
 
-    // Create the event object
     const eventDoc = {
         eventName,
         description,

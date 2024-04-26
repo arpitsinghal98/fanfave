@@ -1,115 +1,117 @@
-/* Login.css */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
-
-.page-background {
-  margin: 0;
+/* Full-screen overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  font-family: 'Poppins', sans-serif;
-  overflow: hidden; /* Disable scroll */
-  background: linear-gradient(120deg, #2980b9, #6dd5fa, #ffffff);
-  background-size: 300% 300%;
-  animation: colors 15s ease infinite;
-}
-
-.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
+  background:rgba(0, 0, 0, 0.8);
 }
 
-.login-box {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* Main container with subtle shadow and animation */
+.login-container {
+  background-color: rgba(0, 0, 0, 0.8);
   padding: 40px;
-  max-width: 400px;
-  width: 100%;
+  border-radius: 10px;
+  width: 360px;
+  box-shadow: 0 10px 25px rgba(176, 176, 164, 0.5);
+  animation: appear 0.5s ease-out forwards;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Styling for the login box elements */
+.login-box {
   text-align: center;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  color: white;
 }
 
 .header-title {
-  color: #333;
-  font-weight: 500;
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 28px;
+  color: #ff0000;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  gap:50px;
 }
 
 .form-container {
-  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Adjust as needed */
 }
 
 .input-group {
-  margin-bottom: 1rem;
-  position: relative;
-  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .input-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: #666;
+  font-size: 16px;
+  margin-bottom: 5px;
 }
 
 .input-field {
-  width: 100%;
-  padding: 1rem;
-  border: none;
-  border-radius: 20px;
-  background-color: #ecf0f1;
-  font-size: 1rem;
-  color: #333;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
+  
+  padding: 12px;
+  border: 1px solid #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 5px;
+  transition: border-color 0.3s;
+  margin-bottom: 10px;
 }
 
 .input-field:focus {
-  background-color: #bdc3c7;
+  border-color: #ff0000;
+  background: rgba(255, 255, 255, 0.2);
   outline: none;
 }
 
 .action-button {
   width: 100%;
-  padding: 1rem;
+  padding: 12px;
   border: none;
-  border-radius: 20px;
-  background-image: linear-gradient(120deg, #2980b9, #6dd5fa);
-  color: #fff;
-  font-size: 1.125rem;
+  border-radius: 5px;
+  background: #ff0000;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
 
-.action-button:hover {
-  background-image: linear-gradient(120deg, #2980b9, #6dd5fa);
 }
 
 .link-text {
-  color: #666;
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  margin-top: 20px;
+  font-size: 16px;
+  color: #ddd;
 }
 
 .link-anchor {
-  color: #3498db;
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.3s ease;
-}
-
-.link-anchor:hover {
-  color: #2980b9;
+  background: none;
+  border: none;
+  color: #ffcc29;
+  cursor: pointer;
   text-decoration: underline;
 }
 
-/* Keyframes for the animated background */
-@keyframes colors {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.link-anchor:hover {
+  color: #ffffff;
+}
+
+.success-banner {
+  background: linear-gradient(to right, #4caf50, #8bc34a);
+  color: white;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.input-field,
+.action-button {
+  width: calc(100% - 30px); /* Assuming 12px padding on both sides */
 }

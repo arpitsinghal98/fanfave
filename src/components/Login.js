@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import './Login.css'; // Import the CSS file for styling
+import Signup from './Signup'; // Import the Signup component
 
-const Login = () => {
+const Login = ({ onClose, onShowSignup }) => {
+  const [showSignupModal, setShowSignupModal] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,7 +18,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/login', { // Use your server's URL
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,18 +33,27 @@ const Login = () => {
         const data = await response.json();
         const userInterests = data.interests;
         localStorage.setItem('login', 'true');
-        localStorage.setItem('interests',userInterests);
-        window.location.href = "/home";
+        localStorage.setItem('interests', userInterests);
+        setLoginSuccess(true); // Set login success state to true
+        setTimeout(() => {
+          onClose(); // Close the modal
+          window.location.reload(); // Refresh the page after a delay
+        }, 1000); // 3000 milliseconds (3 seconds) delay
       }
     } catch (error) {
       console.error('Login failed:', error);
     }
   };
-  
+
   return (
-    <div className="page-background">
+    <div className="modal-overlay">
       <div className="login-container">
         <div className="login-box">
+          {loginSuccess && (
+            <div className="success-banner">
+              Login successful!
+            </div>
+          )}
           <h2 className="header-title">Login</h2>
           <form onSubmit={handleLogin} className="form-container">
             <div className="input-group">
@@ -70,10 +82,21 @@ const Login = () => {
             </div>
             <button type="submit" className="action-button">Login</button>
           </form>
-          <p className="link-text">Don't have an account? <a href="/signup" className="link-anchor">Sign Up</a></p>
+          <p className="link-text">
+            Don't have an account?{' '}
+            <button
+              className="link-anchor"
+              onClick={() => {
+                onShowSignup(); // This will trigger the handleShowSignup function in Header.js
+              }}
+            >
+              Sign Up
+            </button>
+          </p>
           <p className="link-text">Continue as a Guest? <a href="/home" className="link-anchor">Click Here</a></p>
         </div>
       </div>
+      {showSignupModal && <Signup onClose={() => setShowSignupModal(false)} />}
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './Signup.css';
 
-const Signup = () => {
+const Signup = ({ onClose, onShowLogin }) => {
     const [step, setStep] = useState(1);
+    const [signupSuccess, setSignupuccess] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -51,7 +52,10 @@ const Signup = () => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             } else {
-                window.location.href = "/login";
+                setSignupuccess(true);
+                setTimeout(() => {
+                    onShowLogin();
+                }, 1000);
             }
         } catch (error) {
             console.error('There was an error creating the user:', error);
@@ -59,12 +63,15 @@ const Signup = () => {
     };
 
     const handleSelectSport = (sport) => {
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            interests: prevFormData.interests.includes(sport)
-                ? prevFormData.interests.filter(s => s !== sport)
-                : [...prevFormData.interests, sport]
-        }));
+        setFormData(prevFormData => {
+            const isAlreadySelected = prevFormData.interests.includes(sport);
+            return {
+                ...prevFormData,
+                interests: isAlreadySelected
+                    ? prevFormData.interests.filter(s => s !== sport)
+                    : [...prevFormData.interests, sport]
+            };
+        });
     };
 
     const handleChange = (e) => {
@@ -95,9 +102,14 @@ const Signup = () => {
     };
 
     return (
-        <div className="page-background">
-            <div className="signup-container">
+        <div className="modal-overlay">
+            <div className="signup-modal">
                 <div className="signup-box">
+                    {signupSuccess && (
+                        <div className="success-banner">
+                            Account Created! Please Login...
+                        </div>
+                    )}
                     {step === 1 && (
                         <>
                             <h2 className="header2">Create Account</h2>
@@ -148,16 +160,10 @@ const Signup = () => {
                             <br />
                             <div className="interests-grid">
                                 {sportsOptions.map(sport => (
-                                    <div key={sport} className="interests-option">
-                                        <input
-                                            type="checkbox"
-                                            id={sport}
-                                            name="interests"
-                                            value={sport}
-                                            checked={formData.interests.includes(sport)}
-                                            onChange={() => handleSelectSport(sport)}
-                                        />
-                                        <label htmlFor={sport}>{sport}</label>
+                                    <div key={sport}
+                                        className={`interests-option ${formData.interests.includes(sport) ? 'selected' : ''}`}
+                                        onClick={() => handleSelectSport(sport)}>
+                                        {sport}
                                     </div>
                                 ))}
                             </div>
@@ -167,7 +173,7 @@ const Signup = () => {
                             <p className="link-text">Missed Something? <a href="#" className="link-anchor" onClick={() => setStep(1)}>Go Back</a></p>
                         </>
                     )}
-                    <p className="login-link-text">Already have an account? <a className="link" href="/login">Login</a></p>
+                    <p className="login-link-text">Already have an account? <a className="link" onClick={onShowLogin}>Login</a></p>
                 </div>
             </div>
         </div>
