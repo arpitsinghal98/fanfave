@@ -3,16 +3,29 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const cors = require('cors');
+const { getJson } = require("serpapi");
 const { v4: uuidv4 } = require('uuid');
 const { Client } = require('@elastic/elasticsearch');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const OpenAI = require("openai");
 const { isDataView } = require('util/types');
 require('dotenv').config();
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });  
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+
+
+
+const esClient = new Client({
+    node: 'http://localhost:9200'
+});
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -23,12 +36,187 @@ const storage = multer.diskStorage({
         cb(null, fileName);
     }
 });
-
 const upload = multer({ storage: storage });
 
-const esClient = new Client({
-    node: 'http://localhost:9200'
-});
+//--- OPENAI CODE
+async function getLocation() {
+    const response = await fetch("https://ipapi.co/json/");
+    const locationData = await response.json();
+    return locationData;
+  }
+
+  async function getSportEvents(city) {
+
+    try {
+        const body = await esClient
+        .search({
+          index: "events",
+          body: {
+            query: {
+              bool: {
+                must: [
+                  // Match the topic
+                  { query_string: { query: city } }, // Match the search query in all fields
+                ],
+              },
+            },
+          },
+        })
+   
+       const res = body.hits.hits
+       const sources = [];
+        for (const item of res) {
+            const sourceData = item._source;
+            sources.push(sourceData);
+        }
+       return res;
+   
+     } catch (error) {
+       console.error('Error retrieving posts:', error);
+       return 'Internal Server Error';
+     }
+  }
+
+  async function getUserInterest(email) {
+    try {
+      const response = await esClient.search({
+        index: "users",
+        body: {
+          query: {
+            match: { email },
+          },
+        },
+      });
+  
+      if (response.hits.total.value === 0) {
+        return  "User not found" ;
+      }
+  
+      const user = response.hits.hits[0];
+      return user;
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  const tools = [
+    {
+      type: "function",
+      function: {
+        name: "getLocation",
+        description: "Get the user's location based on their IP address",
+        parameters: {
+          type: "object",
+          properties: {
+            
+          },
+        },
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "getSportEvents",
+        description: "Get sports events",
+        parameters: {
+          type: "object",
+          properties: {city: {
+            type: "string",
+          },
+        },
+        required: ["city"],
+        },
+      }
+    },
+    {
+        type: "function",
+        function: {
+          name: "getUserInterest",
+          description: "Get user sports intrests ",
+          parameters: {
+            type: "object",
+            properties: {
+              email: {
+                type: "string",
+              },
+            },
+            required: ["email"],
+          },
+        }
+      },
+  ];
+  
+  const availableTools = {
+    getSportEvents,
+    getLocation,
+    getUserInterest
+  };
+  
+  const messages = [
+    {
+      role: "system",
+      content: `You are a helpful assistant. Only use the functions you have been provided with.`,
+    },
+  ];
+  
+  async function agent(userInput) {
+    messages.push({
+      role: "user",
+      content: userInput,
+    });
+  
+    for (let i = 0; i < 5; i++) {
+      const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo-16k",
+        messages: messages,
+        tools: tools,
+      });
+  
+      const { finish_reason, message } = response.choices[0];
+  
+      if (finish_reason === "tool_calls" && message.tool_calls) {
+        const functionName = message.tool_calls[0].function.name;
+        console.log("function name: ", functionName)
+        const functionToCall = availableTools[functionName];
+        const functionArgs = JSON.parse(message.tool_calls[0].function.arguments);
+        const functionArgsArr = Object.values(functionArgs);
+        const functionResponse = await functionToCall.apply(
+          null,
+          functionArgsArr
+        );
+  
+        messages.push({
+          role: "function",
+          name: functionName,
+          content: `
+                  The result of the last function was this: ${JSON.stringify(
+                    functionResponse
+                  )}
+                  `,
+        });
+      } else if (finish_reason === "stop") {
+        messages.push(message);
+        return message.content;
+      }
+    }
+    return "The maximum number of iterations has been met without a suitable answer. Please try again with a more specific input.";
+  }
+
+  app.post('/recommend-per-sport-events', async (req, res) => {
+    const response = await agent(
+      `Please suggest some sports events from the list of events given by the getSportEvents function provided to you. Suggest based on my location, user interests using the functions given. my email is ${req.body.userid}. In your result just specify event title, date, description and location`
+    );
+  
+    res.status(200).json({ response });
+  });
+
+  app.post('/recommend-per-sport-events2', async (req, res) => {
+    const response = await getSportEvents('chicago')
+  
+    res.status(200).json({ response });
+  });
+  
 
 app.get('/api/news', (req, res) => {
     const apiUrl = `https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=${process.env.NEWSAPI_KEY}`;
