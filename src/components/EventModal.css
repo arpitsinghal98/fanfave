@@ -54,6 +54,7 @@
   
   .form-row.full {
     flex-direction: column;
+    gap: 15px;
   }
   
   .form-row.half input,
