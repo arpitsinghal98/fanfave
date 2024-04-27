@@ -45,6 +45,85 @@ async function getLocation() {
     return locationData;
   }
 
+  const fetchEventById = async (id) => {
+    try {
+      // Log the ID being used for the search
+      console.log("ID-------------: ", id);
+  
+      // Use the esclient to search for the event by its ID
+      const response = await esClient.search({
+        index: "events",
+        body: {
+          query: {
+            match: {
+              _id: id,
+            },
+          },
+        },
+      });
+  
+      // Log and return the search hits
+      console.log(response.hits.hits);
+      return response.hits.hits;
+    } catch (error) {
+      // Log any errors and rethrow the error
+      console.error("Error retrieving event:", error);
+      throw error;
+    }
+  };
+
+  function extractJSON(text) {
+    // Define a regular expression pattern to match the JSON object at the beginning of the text
+    const jsonPattern = /^\s*{[^{}]*}\s*/;
+  
+    // Find the match in the text
+    const match = text.match(jsonPattern);
+  
+    // Check if a match was found
+    if (match && match[0]) {
+      // Extract the JSON string
+      const jsonString = match[0];
+  
+      // Parse the JSON string to get the JSON object
+      const jsonObject = JSON.parse(jsonString);
+  
+      // Return the JSON object
+      return jsonObject;
+    } else {
+      // If no match was found, return null or throw an error
+      console.error('No JSON object found at the beginning of the text');
+      return null;
+    }
+  }
+  
+  
+  
+
+  async function getUserSearchHistory(email){
+    const indexName = 'search_history';
+
+  try {
+    // Fetch the document for the specified userID
+    const response = await esClient.get({
+      index: indexName,
+      id: email,
+    });
+
+    if (response.found) {
+      // If the document is found, return the search history (queries)
+      const searchHistory = response._source.queries;
+      return searchHistory;
+    } else {
+      // If the document is not found, return an empty array
+      console.log(`No search history found for userID: ${email}`);
+      return [];
+    }
+  } catch (error) {
+    console.error(`Error fetching search history for userID: ${email}`, error);
+    return [];
+  }
+  }
+
   async function getSportEvents(city) {
 
     try {
@@ -64,11 +143,6 @@ async function getLocation() {
         })
    
        const res = body.hits.hits
-       const sources = [];
-        for (const item of res) {
-            const sourceData = item._source;
-            sources.push(sourceData);
-        }
        return res;
    
      } catch (error) {
@@ -106,11 +180,27 @@ async function getLocation() {
         },
       }
     },
+    {
+      type: "function",
+      function: {
+        name: "getUserSearchHistory",
+        description: "Get user search history",
+        parameters: {
+          type: "object",
+          properties: {email: {
+            type: "string",
+          },
+        },
+        required: ["email"],
+        },
+      }
+    },
   ];
   
   const availableTools = {
     getSportEvents,
     getLocation,
+    getUserSearchHistory
   };
   
   const messages = [
@@ -120,6 +210,19 @@ async function getLocation() {
     },
   ];
   
+  async function generateText(messages) {
+    try {
+      const response = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo-16k",
+          messages: messages,
+      });
+      return response.choices[0].message.content.trim();
+    } catch (error) {
+      console.error('Error with OpenAI API:', error);
+      throw error;
+    }
+  }
+
   async function agent(userInput) {
     messages.push({
       role: "user",
@@ -164,12 +267,28 @@ async function getLocation() {
   }
 
   app.post('/recommend-per-sport-events', async (req, res) => {
-    console.log("e",req.body.interest)
     const response = await agent(
-      `Please suggest some sports events from the list of events given by the getSportEvents function provided to you. Suggest based on my location using the functions given. user interests are ${req.body.interest}. In your result just specify event title, date, description and location`
+      `Please suggest some sports events from the list of events given by the getSportEvents function provided to you. Suggest sports event based on my location, user interest and user search history using the functions given. user interests are ${req.body.interest}. user email to fetch getUserSearchHistory is ${req.body.email}. In your result just specify event title, date, description and location
+      atlast give me in json the event id of the event you recommend`
     );
-  
-    res.status(200).json({ response });
+
+    const response2 = await agent(`find the event id recommended in this given text.  for example the json should be like this:
+    {
+      "eventId": "id here"
+    } the text is: ${response}`)
+    console.log("r: ",response2)
+    const data = extractJSON(response2);
+    console.log("rr: ",data)
+    const final_res = await fetchEventById(data.event_id)
+    console.log("final-res: ",data)
+    const sources = [];
+    for (const item of final_res) {
+      const sourceData = item._source;
+      sources.push(sourceData);
+    }
+    
+    console.log("sources-res: ",sources)
+    res.status(200).send( sources );
   });
 
   app.post('/recommend-per-sport-events2', async (req, res) => {
@@ -240,7 +359,9 @@ app.post('/api/login', async (req, res) => {
         const isValid = await bcrypt.compare(password, hashedPassword);
 
         if (isValid) {
-            res.json({ message: 'Login successful', source: response.hits.hits[0]._source });
+
+            res.json({ message: 'Login successful', interests: response.hits.hits[0]._source.interests,email: response.hits.hits[0]._source.email  });
+
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -297,8 +418,7 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
 
 app.post('/api/searchevents', async (req, res) => {
 
-    const { query } = req.body;
-    console.log(query)
+    const { query, email } = req.body;
     try {
         const response = await esClient.search({
             index: 'events',
@@ -324,6 +444,32 @@ app.post('/api/searchevents', async (req, res) => {
                 }
             }
         });
+
+        const indexName = 'search_history';
+
+      try {
+        // Check if the document for the user exists in the index
+        await esClient.update({
+          index: indexName,
+          id: email,
+          body: {
+            script: {
+              source: 'if (ctx._source.queries == null) { ctx._source.queries = new ArrayList(); } ctx._source.queries.add(params.query)',
+              lang: 'painless',
+              params: {
+                query: query,
+              },
+            },
+            // Use upsert to create a new document if one does not already exist
+            upsert: {
+              userID: email,
+              queries: [query],
+            },
+          },
+        });
+      } catch (error) {
+        console.error('Error storing search history:', error);
+      }
 
         const events = response.hits.hits.map(hit => hit._source);
         console.log(response);
@@ -385,6 +531,8 @@ app.get('/api/events', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
 
 
 const PORT = process.env.PORT || 9000;
