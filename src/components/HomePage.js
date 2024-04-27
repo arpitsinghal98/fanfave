@@ -55,7 +55,7 @@ const HomePage = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({query: searchTerm}) 
+        body: JSON.stringify({ query: searchTerm })
       });
 
       if (!response.ok) {
@@ -65,7 +65,7 @@ const HomePage = () => {
       // Handle the received events data, such as updating state or rendering them on the UI
       console.log('Events:', events);
       setEvents(events)
-      
+
     } catch (error) {
       console.error('Error Failed to search events', error);
       alert('Failed to search events');
@@ -88,7 +88,7 @@ const HomePage = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({interest: interests}) 
+        body: JSON.stringify({ interest: interests })
       });
 
       if (!response.ok) {
@@ -97,12 +97,12 @@ const HomePage = () => {
       const data = await response.json();
       console.log(data)
       setrecommend(data.response)
-      
+
     } catch (error) {
       console.error('Error Failed to recommend events', error);
       alert('Failed to recommend events');
     }
-    
+
   };
 
 
@@ -131,9 +131,15 @@ const HomePage = () => {
                 Add New Event
               </button>
               <button onClick={handleManageEvents} className="event-button">
-                Manage Event
+                Manage Events
               </button>
             </div>
+          )}
+
+          {!checkRole && (
+            <button onClick={handleManageEvents} className="event-button">
+              View Events
+            </button>
           )}
           <EventModal
             isVisible={isModalVisible}
