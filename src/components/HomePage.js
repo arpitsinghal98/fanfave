@@ -9,6 +9,7 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [recommend, setrecommend] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
+  const [events, setEvents] = useState([]);
 
   const openModal = () => {
     setModalVisible(true);
@@ -24,7 +25,7 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetch('/api/news')
+    fetch('http://localhost:9000/api/news')
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -43,18 +44,27 @@ const HomePage = () => {
   }, []);
 
   async function handleSearch(event) {
-    const searchTerm = event.target.value; // Retrieve the search term from the input field
+    const searchTerm = event.target.value;
     try {
-      const response = await fetch(`/api/searchevents?query=${encodeURIComponent(searchTerm)}`);
+      const response = await fetch('http://localhost:9000/api/searchevents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({query: searchTerm}) 
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to fetch events');
+        throw new Error('Failed to search events');
       }
       const events = await response.json();
       // Handle the received events data, such as updating state or rendering them on the UI
       console.log('Events:', events);
+      setEvents(events)
+      
     } catch (error) {
-      console.error('Error searching events:', error);
-      // Handle error (e.g., show error message to the user)
+      console.error('Error Failed to search events', error);
+      alert('Failed to search events');
     }
   }
 
@@ -62,24 +72,27 @@ const HomePage = () => {
 
   // Let's assume this function will be used for fetching and displaying recommended events.
   async function getRecommendedEvents() {
+    const interests = localStorage.getItem('interests');
+    console.log("dasda -i: ", interests)
     try {
       const response = await fetch('http://localhost:9000/recommend-per-sport-events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
+        body: JSON.stringify({interest: interests}) 
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update user profile');
+        throw new Error('Failed to recommend events');
       }
       const data = await response.json();
       console.log(data)
       setrecommend(data.response)
       
     } catch (error) {
-      console.error('Error updating user:', error);
-      alert('Failed to update profile');
+      console.error('Error Failed to recommend events', error);
+      alert('Failed to recommend events');
     }
     
   };
@@ -119,18 +132,33 @@ const HomePage = () => {
         </section>
         <section className="recommended-events content-area">
           <h2>Recommended for You</h2>
-          {/* <button onClick={getRecommendedEvents()}>Recommend Personalized Sports Events</button> */}
           <div className="container">
-            {/* Button to fetch response from ChatGPT */}
             <button onClick={getRecommendedEvents} className="fetch-button">
-                Recommend Personalized Sports Events
+              Recommend Personalized Sports Events
             </button>
-            {/* Rectangle area to display the response */}
             <div className="response-box">
-            <p>{recommend}</p>
+              <p>{recommend}</p>
             </div>
-        </div>
+          </div>
           <div className="events-list">
+            {/* Render the list of events */}
+            {events.map((event, index) => (
+              <div key={index} className="event-card">
+                <img src={event.image} alt={event.eventName} className="event-image" />
+                <div className="event-info">
+                  <h3>{event.eventName}</h3>
+                  <p>{event.description}</p>
+                  <p>Date: {event.date}</p>
+                  <p>Time: {event.time}</p>
+                  <p>Location: {event.location}</p>
+                  <p>Organizer: {event.organizer}</p>
+                  <p>Sport Type: {event.sportType}</p>
+                  <p>Teams: {event.teams}</p>
+                  <p>Ticket Info: {event.ticketInfo}</p>
+                  <p>Capacity: {event.capacity}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
         <section className="latest-news content-area">

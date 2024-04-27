@@ -77,29 +77,6 @@ async function getLocation() {
      }
   }
 
-  async function getUserInterest(email) {
-    try {
-      const response = await esClient.search({
-        index: "users",
-        body: {
-          query: {
-            match: { email },
-          },
-        },
-      });
-  
-      if (response.hits.total.value === 0) {
-        return  "User not found" ;
-      }
-  
-      const user = response.hits.hits[0];
-      return user;
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
   const tools = [
     {
       type: "function",
@@ -129,28 +106,11 @@ async function getLocation() {
         },
       }
     },
-    {
-        type: "function",
-        function: {
-          name: "getUserInterest",
-          description: "Get user sports intrests ",
-          parameters: {
-            type: "object",
-            properties: {
-              email: {
-                type: "string",
-              },
-            },
-            required: ["email"],
-          },
-        }
-      },
   ];
   
   const availableTools = {
     getSportEvents,
     getLocation,
-    getUserInterest
   };
   
   const messages = [
@@ -204,8 +164,9 @@ async function getLocation() {
   }
 
   app.post('/recommend-per-sport-events', async (req, res) => {
+    console.log("e",req.body.interest)
     const response = await agent(
-      `Please suggest some sports events from the list of events given by the getSportEvents function provided to you. Suggest based on my location, user interests using the functions given. my email is ${req.body.userid}. In your result just specify event title, date, description and location`
+      `Please suggest some sports events from the list of events given by the getSportEvents function provided to you. Suggest based on my location using the functions given. user interests are ${req.body.interest}. In your result just specify event title, date, description and location`
     );
   
     res.status(200).json({ response });
@@ -334,9 +295,10 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
     }
 });
 
-app.get('/api/searchevents', async (req, res) => {
+app.post('/api/searchevents', async (req, res) => {
 
-    const { query } = req.query;
+    const { query } = req.body;
+    console.log(query)
     try {
         const response = await esClient.search({
             index: 'events',
