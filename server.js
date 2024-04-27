@@ -29,7 +29,7 @@ const esClient = new Client({
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './src/images/');
+        cb(null, './public/eventimages/');
     },
     filename: function (req, file, cb) {
         const fileName = `${req.body.sportType}_${uuidv4()}${path.extname(file.originalname)}`;
@@ -360,7 +360,7 @@ app.post('/api/login', async (req, res) => {
 
         if (isValid) {
 
-            res.json({ message: 'Login successful', interests: response.hits.hits[0]._source.interests,email: response.hits.hits[0]._source.email  });
+            res.json({ message: 'Login successful', interests: response.hits.hits[0]._source.interests, email: response.hits.hits[0]._source.email, firstName: response.hits.hits[0]._source.firstName });
 
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
@@ -385,8 +385,10 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
         ticketInfo,
         capacity
     } = req.body;
+    
+    const imagePath = req.file ? `./eventimages/${req.file.filename}` : null;
 
-    const imagePath = req.file ? `./src/images/${req.file.filename}` : null;
+    console.log(imagePath);
 
     const eventDoc = {
         eventName,
@@ -512,18 +514,22 @@ app.get('/api/upcoming-events', async (req, res) => {
 
 app.get('/api/events', async (req, res) => {
   try {
-    // Query Elasticsearch for events
     const response = await esClient.search({
-      index: 'events', // Replace 'events_index' with your Elasticsearch index name
+      index: 'events',
       body: {
         query: {
-          match_all: {} // Match all documents (events)
+          match_all: {}
         }
       }
     });
 
-    // Extract events from the Elasticsearch response
-    const events = response.hits.hits.map(hit => hit._source);
+    // Extract events from the Elasticsearch response and include the '_id'
+    const events = response.hits.hits.map(hit => ({
+      id: hit._id, // Include the document ID as 'id'
+      ...hit._source // Spread the rest of the event data
+    }));
+
+    console.log(events);
 
     res.json({ events });
   } catch (error) {
@@ -532,7 +538,24 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
+app.delete("/api/deleteevent/:eventId", async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    console.log("Deleting event with ID:", eventId);
 
+    // Await the response from Elasticsearch to ensure the operation completes
+    const response = await esClient.delete({
+      index: "events",
+      id: eventId,
+    });
+
+    console.log("Event deleted successfully");
+    res.status(200).send("Event deleted successfully");
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 
 const PORT = process.env.PORT || 9000;

@@ -9,7 +9,7 @@ const HomePage = () => {
   const [latestNews, setLatestNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [recommend, setRecommend] = useState('');
+  const [recommend, setrecommend] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isManageEventsModalVisible, setManageEventsModalVisible] = useState(false);
   const [events, setEvents] = useState([]);
@@ -106,7 +106,8 @@ const HomePage = () => {
       }
       const data = await response.json();
       console.log(data)
-      setRecommend(data.response)
+      setrecommend(data)
+    
     } catch (error) {
       console.error('Error Failed to recommend events', error);
       alert('Failed to recommend events');
