@@ -240,7 +240,7 @@ app.post('/api/login', async (req, res) => {
         const isValid = await bcrypt.compare(password, hashedPassword);
 
         if (isValid) {
-            res.json({ message: 'Login successful', interests: response.hits.hits[0]._source.interests, firstName: response.hits.hits[0]._source.firstName });
+            res.json({ message: 'Login successful', source: response.hits.hits[0]._source });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }

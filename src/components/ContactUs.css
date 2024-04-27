@@ -1,0 +1,110 @@
+/* ContactUs.css */
+
+/* Contact Container */
+.contact-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px 20px;
+    text-align: center;
+  }
+  
+  /* Contact Heading */
+  .contact-heading {
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+  
+  /* Contact Description */
+  .contact-description {
+    font-size: 18px;
+    margin-bottom: 40px;
+  }
+  
+  /* Contact Form Container */
+  .contact-form-container {
+    margin-bottom: 40px;
+  }
+  
+  /* Contact Form */
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Form Group */
+  .form-group {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  /* Form Label */
+  .form-label {
+    font-size: 18px;
+    margin-bottom: 5px;
+    display: block;
+    text-align: left;
+  }
+  
+  /* Form Input */
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    font-size: 18px;
+    transition: border-color 0.3s;
+  }
+  
+  /* Form Textarea */
+  .form-textarea {
+    height: 150px;
+  }
+  
+  /* Form Input Focus */
+  .form-input:focus,
+  .form-textarea:focus {
+    border-color: #007bff;
+  }
+  
+  /* Submit Button */
+  .submit-button {
+    padding: 15px 30px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* Submit Button Hover */
+  .submit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Contact Info */
+  .contact-info {
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  /* Info Item */
+  .info-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Info Item Icon */
+  .info-item i {
+    font-size: 24px;
+    margin-right: 10px;
+  }
+  
+  /* Info Item Text */
+  .info-item p {
+    font-size: 18px;
+  }
+  
