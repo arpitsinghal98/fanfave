@@ -1,70 +1,87 @@
-# Getting Started with Create React App
+# FanFave
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+FanFave is a sports event recommendation system powered by generative AI. It provides personalized recommendations for basketball, baseball, and other sports events based on user profiles, locations, posts, and search histories.
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [Introduction](#introduction)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-### `npm start`
+## Introduction
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+FanFave aims to enhance the sports fan experience by leveraging generative AI to recommend relevant sports events. By analyzing user data such as profiles, locations, posts, and search histories, FanFave generates personalized recommendations tailored to each user's preferences and interests.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
 
-### `npm test`
+- **Personalized Recommendations**: FanFave provides personalized recommendations for sports events based on user profiles, locations, posts, and search histories.
+- **Multi-Sport Support**: The system covers a wide range of sports, including basketball, baseball, soccer, and more, ensuring that users find events that match their interests.
+- **Interactive User Interface**: FanFave offers an intuitive user interface where users can explore recommended events, search for specific sports, and view event details.
+- **Continuous Learning**: The system continuously learns from user interactions and feedback to improve the quality and relevance of its recommendations over time.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Technologies Used
 
-### `npm run build`
+FanFave utilizes the following technologies:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Elasticsearch**: A distributed search and analytics engine used for storing and indexing sports event data.
+- **React**: A JavaScript library for building user interfaces, used for the frontend development of FanFave.
+- **Docker**: A containerization platform used to package FanFave and its dependencies into lightweight, portable containers.
+- **Server.js**: A backend server framework for handling API calls and interactions with Elasticsearch.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Getting Started
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Prerequisites
 
-### `npm run eject`
+Before running FanFave, ensure you have the following prerequisites installed on your system:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Docker**: Ensure Docker is installed on your system.
+- **Node.js**: Make sure you have Node.js installed to run the React frontend locally for development purposes.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Installation
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. Clone the FanFave repository:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    ```bash
+    git clone https://github.com/yourusername/fanfave.git
+    cd fanfave
+    ```
 
-## Learn More
+2. Build and run the Docker containers:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    ```bash
+    docker-compose up --build
+    ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. Once the containers are up and running, you can access the FanFave application at http://localhost:3000 in your web browser.
 
-### Code Splitting
+## Usage
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- Upon accessing the FanFave application, users can log in and view personalized recommendations for sports events.
+- Users can explore recommended events, search for specific sports, and view event details such as location, date, and time.
+- The system continuously learns from user interactions and feedback to improve the quality of its recommendations over time.
 
-### Analyzing the Bundle Size
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Contributions to FanFave are welcome! If you'd like to contribute new features, improvements, or bug fixes, please follow these steps:
 
-### Making a Progressive Web App
+1. Fork the FanFave repository.
+2. Create a new branch for your feature: `git checkout -b feature-name`
+3. Make your changes and commit them: `git commit -m 'Add new feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## License
 
-### Advanced Configuration
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Acknowledgements
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- FanFave was inspired by the desire to enhance the fan experience in the sports industry.
+- Special thanks to the developers and contributors of Elasticsearch, React, Docker, and other open-source projects used in this project.
