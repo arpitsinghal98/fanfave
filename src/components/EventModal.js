@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import './EventModal.css';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const EventModal = ({ isVisible, onClose, onSave }) => {
     const [eventData, setEventData] = useState({
         eventName: '',
         description: '',
         date: '',
-        time:'',
+        time: '',
         location: '',
         organizer: '',
         sportType: '',
@@ -15,6 +17,11 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
         capacity: '',
         image: null,
     });
+
+    const [imageName, setImageName] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     if (!isVisible) return null;
 
@@ -27,6 +34,7 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
         // We're only interested in the first file
         const file = e.target.files[0];
         setEventData({ ...eventData, image: file });
+        setImageName(file.name); // Set the image name
     };
 
     const handleSubmit = async (e) => {
@@ -45,22 +53,40 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
 
             if (response.ok) {
                 console.log('Event created successfully');
+                setSnackbarMessage('Event created successfully');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
                 onClose();
             } else {
                 console.error('Failed to create event:', response.statusText);
+                setSnackbarMessage('Failed to create event. Please try again.');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
+            setSnackbarMessage('Error submitting form. Please try again.');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+        // Reload window after 2 seconds
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    };
 
     return (
         <div className={`create-event-modal-backdrop ${isVisible ? 'show' : ''}`}>
             <div className="create-event-modal">
                 <div className="create-event-modal-header">
                     <h2>Create New Event</h2>
-                    <button className="modal-close-button" onClick={onClose}>×</button>
+                    <div className="modal-close-button-container">
+                        <button className="modal-close-button" onClick={onClose}>×</button>
+                    </div>
                 </div>
                 <form className="create-event-form" onSubmit={handleSubmit} encType="multipart/form-data">
                     <div className="form-row full">
@@ -91,7 +117,7 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
                                 Upload Event Image
                             </label>
                             <input id="image-upload" type="file" name="image" className="image-upload-input" onChange={handleImageChange} accept="image/*" />
-                            <span className="image-upload-instruction">No file chosen</span>
+                            <span className="image-upload-instruction">{imageName || "No file chosen"}</span> {/* Display the image name */}
                         </div>
                     </div>
                     <div className="form-row full">
@@ -99,6 +125,11 @@ const EventModal = ({ isVisible, onClose, onSave }) => {
                     </div>
                 </form>
             </div>
+            <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 };
