@@ -45,13 +45,15 @@ const HomePage = () => {
 
   async function handleSearch(event) {
     const searchTerm = event.target.value;
+    const email = localStorage.getItem('email');
+    console.log("dasda -e: ", email)
     try {
       const response = await fetch('http://localhost:9000/api/searchevents', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({query: searchTerm}) 
+        body: JSON.stringify({query: searchTerm, email: email}) 
       });
 
       if (!response.ok) {
@@ -73,14 +75,14 @@ const HomePage = () => {
   // Let's assume this function will be used for fetching and displaying recommended events.
   async function getRecommendedEvents() {
     const interests = localStorage.getItem('interests');
-    console.log("dasda -i: ", interests)
+    const email = localStorage.getItem('email');
     try {
       const response = await fetch('http://localhost:9000/recommend-per-sport-events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({interest: interests}) 
+        body: JSON.stringify({interest: interests, email: email}) 
       });
 
       if (!response.ok) {

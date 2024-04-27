@@ -45,6 +45,31 @@ async function getLocation() {
     return locationData;
   }
 
+  async function getUserSearchHistory(email){
+    const indexName = 'search_history';
+
+  try {
+    // Fetch the document for the specified userID
+    const response = await esClient.get({
+      index: indexName,
+      id: email,
+    });
+
+    if (response.found) {
+      // If the document is found, return the search history (queries)
+      const searchHistory = response._source.queries;
+      return searchHistory;
+    } else {
+      // If the document is not found, return an empty array
+      console.log(`No search history found for userID: ${userID}`);
+      return [];
+    }
+  } catch (error) {
+    console.error(`Error fetching search history for userID: ${userID}`, error);
+    return [];
+  }
+  }
+
   async function getSportEvents(city) {
 
     try {
@@ -106,11 +131,27 @@ async function getLocation() {
         },
       }
     },
+    {
+      type: "function",
+      function: {
+        name: "getUserSearchHistory",
+        description: "Get user search history",
+        parameters: {
+          type: "object",
+          properties: {email: {
+            type: "string",
+          },
+        },
+        required: ["email"],
+        },
+      }
+    },
   ];
   
   const availableTools = {
     getSportEvents,
     getLocation,
+    getUserSearchHistory
   };
   
   const messages = [
@@ -166,7 +207,7 @@ async function getLocation() {
   app.post('/recommend-per-sport-events', async (req, res) => {
     console.log("e",req.body.interest)
     const response = await agent(
-      `Please suggest some sports events from the list of events given by the getSportEvents function provided to you. Suggest based on my location using the functions given. user interests are ${req.body.interest}. In your result just specify event title, date, description and location`
+      `Please suggest some sports events from the list of events given by the getSportEvents function provided to you. Suggest sports event based on my location, user interest and user search history using the functions given. user interests are ${req.body.interest}. user email to fetch getUserSearchHistory is ${req.body.email}. In your result just specify event title, date, description and location`
     );
   
     res.status(200).json({ response });
@@ -240,7 +281,7 @@ app.post('/api/login', async (req, res) => {
         const isValid = await bcrypt.compare(password, hashedPassword);
 
         if (isValid) {
-            res.json({ message: 'Login successful', interests: response.hits.hits[0]._source.interests });
+            res.json({ message: 'Login successful', interests: response.hits.hits[0]._source.interests,email: response.hits.hits[0]._source.email  });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -297,8 +338,7 @@ app.post('/api/createEvent', upload.single('image'), async (req, res) => {
 
 app.post('/api/searchevents', async (req, res) => {
 
-    const { query } = req.body;
-    console.log(query)
+    const { query, email } = req.body;
     try {
         const response = await esClient.search({
             index: 'events',
@@ -324,6 +364,32 @@ app.post('/api/searchevents', async (req, res) => {
                 }
             }
         });
+
+        const indexName = 'search_history';
+
+      try {
+        // Check if the document for the user exists in the index
+        await esClient.update({
+          index: indexName,
+          id: email,
+          body: {
+            script: {
+              source: 'if (ctx._source.queries == null) { ctx._source.queries = new ArrayList(); } ctx._source.queries.add(params.query)',
+              lang: 'painless',
+              params: {
+                query: query,
+              },
+            },
+            // Use upsert to create a new document if one does not already exist
+            upsert: {
+              userID: email,
+              queries: [query],
+            },
+          },
+        });
+      } catch (error) {
+        console.error('Error storing search history:', error);
+      }
 
         const events = response.hits.hits.map(hit => hit._source);
         console.log(response);
