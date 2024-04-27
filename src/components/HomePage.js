@@ -7,7 +7,7 @@ const HomePage = () => {
   const [latestNews, setLatestNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [recommend, setrecommend] = useState('');
+  const [recommend, setrecommend] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [events, setEvents] = useState([]);
 
@@ -49,13 +49,17 @@ const HomePage = () => {
 
   async function handleSearch(event) {
     const searchTerm = event.target.value;
+    const email = localStorage.getItem('email');
+    console.log("dasda -e: ", email)
     try {
       const response = await fetch('http://localhost:9000/api/searchevents', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ query: searchTerm })
+
+        body: JSON.stringify({query: searchTerm, email: email}) 
+
       });
 
       if (!response.ok) {
@@ -81,14 +85,15 @@ const HomePage = () => {
   // Let's assume this function will be used for fetching and displaying recommended events.
   async function getRecommendedEvents() {
     const interests = localStorage.getItem('interests');
-    console.log("dasda -i: ", interests)
+    const email = localStorage.getItem('email');
     try {
       const response = await fetch('http://localhost:9000/recommend-per-sport-events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ interest: interests })
+        body: JSON.stringify({interest: interests, email: email}) 
+
       });
 
       if (!response.ok) {
@@ -96,8 +101,8 @@ const HomePage = () => {
       }
       const data = await response.json();
       console.log(data)
-      setrecommend(data.response)
-
+      setrecommend(data)
+    
     } catch (error) {
       console.error('Error Failed to recommend events', error);
       alert('Failed to recommend events');
@@ -156,7 +161,26 @@ const HomePage = () => {
               Recommend Personalized Sports Events
             </button>
             <div className="response-box">
-              <p>{recommend}</p>
+            <div className="events-list">
+            {/* Render the list of events */}
+            {recommend.map((event, index) => (
+              <div key={index} className="event-card">
+                <img src={event.image} alt={event.eventName} className="event-image" />
+                <div className="event-info">
+                  <h3>{event.eventName}</h3>
+                  <p>{event.description}</p>
+                  <p>Date: {event.date}</p>
+                  <p>Time: {event.time}</p>
+                  <p>Location: {event.location}</p>
+                  <p>Organizer: {event.organizer}</p>
+                  <p>Sport Type: {event.sportType}</p>
+                  <p>Teams: {event.teams}</p>
+                  <p>Ticket Info: {event.ticketInfo}</p>
+                  <p>Capacity: {event.capacity}</p>
+                </div>
+              </div>
+            ))}
+          </div>
             </div>
           </div>
           <div className="events-list">

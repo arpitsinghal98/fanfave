@@ -31,10 +31,11 @@ const Login = ({ onClose, onShowSignup }) => {
       }
       else {
         const data = await response.json();
+        const userInterests = data.interests;
+        const email = data.email;
         localStorage.setItem('login', 'true');
-        localStorage.setItem('interests', data.source.interests);
-        localStorage.setItem('email', data.source.email);
-        localStorage.setItem('role', data.source.firstName);
+        localStorage.setItem('interests', userInterests);
+        localStorage.setItem('email', email);
         setLoginSuccess(true); // Set login success state to true
         setTimeout(() => {
           onClose(); // Close the modal
