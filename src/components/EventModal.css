@@ -10,36 +10,42 @@
     align-items: center;
     z-index: 1050; /* Above other content */
   }
-  
-  .create-event-modal-backdrop.show {
-    display: flex; /* Show the modal */
-  }
-  
-  .create-event-modal {
-    background: #FFFFFF; /* White background for the modal */
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    width: 50%;
-    max-width: 640px;
-    box-sizing: border-box;
-    overflow-y: auto; /* Enable scroll for overflowing content */
-  }
-  
+
+
   .create-event-modal-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     color: black;
     text-align: center;
+    align-items: center;
+    position: relative; /* Add this line */
   }
   
   .modal-close-button {
+    margin-left: auto;
     background: none;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
+    padding: 0;
   }
+
+  .create-event-modal-backdrop.show {
+    display: flex; /* Show the modal */
+  }
+  
+ .create-event-modal {
+    background: #FFFFFF; /* White background for the modal */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    width: 80%; /* Reduce modal width */
+    max-width: 700px; /* Set maximum width */
+    box-sizing: border-box;
+    overflow-y: auto; /* Enable scroll for overflowing content */
+    max-height: 50vh; /* Set maximum height */
+}
   
   .create-event-form {
     display: flex;

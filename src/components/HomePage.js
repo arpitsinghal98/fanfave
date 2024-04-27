@@ -40,7 +40,7 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetch('http://localhost:9000/api/news')
+    fetch('/api/news')
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -63,7 +63,7 @@ const HomePage = () => {
     const email = localStorage.getItem('email');
     console.log("dasda -e: ", email)
     try {
-      const response = await fetch('http://localhost:9000/api/searchevents', {
+      const response = await fetch('/api/searchevents', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ const HomePage = () => {
     const interests = localStorage.getItem('interests');
     const email = localStorage.getItem('email');
     try {
-      const response = await fetch('http://localhost:9000/recommend-per-sport-events', {
+      const response = await fetch('/recommend-per-sport-events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
