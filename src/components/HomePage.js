@@ -7,8 +7,9 @@ const HomePage = () => {
   const [latestNews, setLatestNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [recommend, setrecommend] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
+  const [events, setEvents] = useState([]);
 
   const openModal = () => {
     setModalVisible(true);
@@ -28,7 +29,7 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetch('/api/news')
+    fetch('http://localhost:9000/api/news')
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -47,21 +48,29 @@ const HomePage = () => {
   }, []);
 
   async function handleSearch(event) {
-    const searchTerm = event.target.value; // Retrieve the search term from the input field
+    const searchTerm = event.target.value;
     try {
-      const response = await fetch(`/api/searchevents?query=${encodeURIComponent(searchTerm)}`);
+      const response = await fetch('http://localhost:9000/api/searchevents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({query: searchTerm}) 
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to fetch events');
+        throw new Error('Failed to search events');
       }
       const events = await response.json();
       // Handle the received events data, such as updating state or rendering them on the UI
       console.log('Events:', events);
+      setEvents(events)
+      
     } catch (error) {
-      console.error('Error searching events:', error);
-      // Handle error (e.g., show error message to the user)
+      console.error('Error Failed to search events', error);
+      alert('Failed to search events');
     }
   }
-
   const handleManageEvents = () => {
     // Logic to open event management view
     console.log('Managing events...');
@@ -70,17 +79,32 @@ const HomePage = () => {
   };
 
   // Let's assume this function will be used for fetching and displaying recommended events.
-  const getRecommendedEvents = () => {
-    // Logic to fetch recommended events
-    // This could be replaced with actual API call logic.
-    return [
-      { id: 1, name: 'Basketball Championship', date: '2024-06-10' },
-      { id: 2, name: 'Local Baseball Derby', date: '2024-06-15' },
-      // More events...
-    ];
+  async function getRecommendedEvents() {
+    const interests = localStorage.getItem('interests');
+    console.log("dasda -i: ", interests)
+    try {
+      const response = await fetch('http://localhost:9000/recommend-per-sport-events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({interest: interests}) 
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to recommend events');
+      }
+      const data = await response.json();
+      console.log(data)
+      setrecommend(data.response)
+      
+    } catch (error) {
+      console.error('Error Failed to recommend events', error);
+      alert('Failed to recommend events');
+    }
+    
   };
 
-  const recommendedEvents = getRecommendedEvents();
 
 
   return (
@@ -121,12 +145,31 @@ const HomePage = () => {
       <main>
         <section className="recommended-events content-area">
           <h2>Recommended for You</h2>
+          <div className="container">
+            <button onClick={getRecommendedEvents} className="fetch-button">
+              Recommend Personalized Sports Events
+            </button>
+            <div className="response-box">
+              <p>{recommend}</p>
+            </div>
+          </div>
           <div className="events-list">
-            {recommendedEvents.map(event => (
-              <div key={event.id} className="event-card">
-                <h3>{event.name}</h3>
-                <p>Date: {event.date}</p>
-                {/* Add more event details and actions here */}
+            {/* Render the list of events */}
+            {events.map((event, index) => (
+              <div key={index} className="event-card">
+                <img src={event.image} alt={event.eventName} className="event-image" />
+                <div className="event-info">
+                  <h3>{event.eventName}</h3>
+                  <p>{event.description}</p>
+                  <p>Date: {event.date}</p>
+                  <p>Time: {event.time}</p>
+                  <p>Location: {event.location}</p>
+                  <p>Organizer: {event.organizer}</p>
+                  <p>Sport Type: {event.sportType}</p>
+                  <p>Teams: {event.teams}</p>
+                  <p>Ticket Info: {event.ticketInfo}</p>
+                  <p>Capacity: {event.capacity}</p>
+                </div>
               </div>
             ))}
           </div>

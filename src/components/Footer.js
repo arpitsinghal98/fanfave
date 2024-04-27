@@ -8,7 +8,7 @@ const Footer = () => {
             <div className="footer-content">
                 <div className="footer-section about">
                     <h3>About Us</h3>
-                    <p>We are dedicated to bringing you the best sports event recommendations tailored to your interests and location. Explore top sports events and ensure you never miss a game!</p>
+                    <p>We are dedicated to bringing you the best sports event recommendations tailored by Generative AI to your interests and location. Explore top sports events and ensure you never miss a game!</p>
                 </div>
                 <div className="footer-section links">
                     <h3>Quick Links</h3>
@@ -29,7 +29,7 @@ const Footer = () => {
                 </div>
             </div>
             <div className="footer-bottom">
-                <p>&copy; 2024 Sports AI | Designed by YourCompany</p>
+                <p>&copy; 2024 FanFave </p>
             </div>
         </footer>
     );
