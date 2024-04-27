@@ -279,7 +279,7 @@ async function getLocation() {
     console.log("r: ",response2)
     const data = extractJSON(response2);
     console.log("rr: ",data)
-    const final_res = await fetchEventById(data.event_id)
+    const final_res = await fetchEventById(data.eventId)
     console.log("final-res: ",data)
     const sources = [];
     for (const item of final_res) {

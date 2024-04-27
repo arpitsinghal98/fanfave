@@ -60,30 +60,35 @@ const HomePage = () => {
 
   async function handleSearch(event) {
     const searchTerm = event.target.value;
-    const email = localStorage.getItem('email');
-    console.log("dasda -e: ", email)
-    try {
-      const response = await fetch('/api/searchevents', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
 
-        body: JSON.stringify({query: searchTerm, email: email}) 
+    if (searchTerm != "") {
+      const email = localStorage.getItem('email');
+      console.log("dasda -e: ", email)
+      try {
+        const response = await fetch('/api/searchevents', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
 
-      });
+          body: JSON.stringify({ query: searchTerm, email: email })
 
-      if (!response.ok) {
-        throw new Error('Failed to search events');
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to search events');
+        }
+        const events = await response.json();
+        // Handle the received events data, such as updating state or rendering them on the UI
+        console.log('Events:', events);
+        setEvents(events)
+
+      } catch (error) {
+        console.error('Error Failed to search events', error);
+        alert('Failed to search events');
       }
-      const events = await response.json();
-      // Handle the received events data, such as updating state or rendering them on the UI
-      console.log('Events:', events);
-      setEvents(events)
-
-    } catch (error) {
-      console.error('Error Failed to search events', error);
-      alert('Failed to search events');
+    } else {
+      console.log('No Search Keyword Found');
     }
   }
 
@@ -97,7 +102,7 @@ const HomePage = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({interest: interests, email: email}) 
+        body: JSON.stringify({ interest: interests, email: email })
 
       });
 
@@ -107,7 +112,7 @@ const HomePage = () => {
       const data = await response.json();
       console.log(data)
       setrecommend(data)
-    
+
     } catch (error) {
       console.error('Error Failed to recommend events', error);
       alert('Failed to recommend events');
@@ -154,9 +159,9 @@ const HomePage = () => {
             onSave={saveEvent}
           />
           <ManageViewEvents
-                show={isManageEventsModalVisible}
-                onClose={closeManageEventsModal}
-            />
+            show={isManageEventsModalVisible}
+            onClose={closeManageEventsModal}
+          />
         </div>
       </div>
       <main>
@@ -164,26 +169,26 @@ const HomePage = () => {
           <Link onClick={getRecommendedEvents}><h2>Recommendations for You</h2></Link>
           <div className="container">
             <div className="response-box">
-            <div className="events-list">
-            {/* Render the list of events */}
-            {recommend.map((event, index) => (
-              <div key={index} className="event-card">
-                <img src={event.image} alt={event.eventName} className="event-image" />
-                <div className="event-info">
-                  <h3>{event.eventName}</h3>
-                  <p>{event.description}</p>
-                  <p>Date: {event.date}</p>
-                  <p>Time: {event.time}</p>
-                  <p>Location: {event.location}</p>
-                  <p>Organizer: {event.organizer}</p>
-                  <p>Sport Type: {event.sportType}</p>
-                  <p>Teams: {event.teams}</p>
-                  <p>Ticket Info: {event.ticketInfo}</p>
-                  <p>Capacity: {event.capacity}</p>
-                </div>
+              <div className="events-list">
+                {/* Render the list of events */}
+                {recommend.map((event, index) => (
+                  <div key={index} className="event-card">
+                    <img src={event.image} alt={event.eventName} className="event-image" />
+                    <div className="event-info">
+                      <h3>{event.eventName}</h3>
+                      <p>{event.description}</p>
+                      <p>Date: {event.date}</p>
+                      <p>Time: {event.time}</p>
+                      <p>Location: {event.location}</p>
+                      <p>Organizer: {event.organizer}</p>
+                      <p>Sport Type: {event.sportType}</p>
+                      <p>Teams: {event.teams}</p>
+                      <p>Ticket Info: {event.ticketInfo}</p>
+                      <p>Capacity: {event.capacity}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
             </div>
           </div>
           <div className="events-list">
