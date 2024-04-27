@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './ManageViewEvents.css'; // Import CSS for modal styles
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditEventModal from './EditEventModal';
 import { IconButton, CardActions, Dialog, Typography, DialogActions, DialogContent, DialogTitle, Button, Card } from '@mui/material';
-
+import EditIcon from '@mui/icons-material/Edit';
 const ManageViewEvents = ({ show, onClose }) => {
     const [events, setEvents] = useState([]);
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
     const [eventIdToDelete, setEventIdToDelete] = useState(null);
     const [error, setError] = useState(null);
+    const [selectedEventId, setSelectedEventId] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const isAdmin = localStorage.getItem('role') === 'Admin';
 
@@ -28,17 +31,22 @@ const ManageViewEvents = ({ show, onClose }) => {
         if (show) {
             fetchEvents();
         }
+
     }, [show]);
 
     // Use this useEffect to log the events after they have been updated
-    useEffect(() => {
-        if (events.length > 0) {
-            console.log("Logging event images:");
-            events.forEach(event => {
-                console.log(event.image);  // Assuming 'image' is the key where image URLs are stored
-            });
+    const refreshEvents = async () => {
+        try {
+            const response = await fetch('/api/events');
+            if (!response.ok) {
+                throw new Error('Failed to fetch events');
+            }
+            const data = await response.json();
+            setEvents(data.events);
+        } catch (error) {
+            console.error('Error fetching events:', error);
         }
-    }, [events]);
+    };
 
     const handleDeleteClick = (e, eventId) => {
         e.stopPropagation(); // Prevent the click from triggering other click events
@@ -66,6 +74,11 @@ const ManageViewEvents = ({ show, onClose }) => {
         }
     };
 
+    const handleEditClick = (eventId) => {
+        setSelectedEventId(eventId);
+        setIsEditModalOpen(true);
+    };
+
     // Conditional rendering based on the 'show' prop
     return show ? (
         <div className="modal display-block">
@@ -76,7 +89,7 @@ const ManageViewEvents = ({ show, onClose }) => {
                     {events.map((event, index) => (
                         <div key={index} className="event-card">
                             <div className="event-image-container">
-                            <img src={`${process.env.PUBLIC_URL}/${event.image}`} alt={event.eventName} className="event-image" />
+                                <img src={`${process.env.PUBLIC_URL}/${event.image}`} alt={event.eventName} className="event-image" />
                             </div>
                             <div className="event-details">
                                 <h3>{event.eventName}</h3>
@@ -94,10 +107,22 @@ const ManageViewEvents = ({ show, onClose }) => {
                                     <IconButton onClick={(e) => handleDeleteClick(e, event.id)}>
                                         <DeleteIcon />
                                     </IconButton>
+                                    <IconButton onClick={() => handleEditClick(event.id)}>
+                                        <EditIcon />
+                                    </IconButton>
                                 </CardActions>
                             )}
                         </div>
                     ))}
+                    <EditEventModal
+                        eventId={selectedEventId}
+                        open={isEditModalOpen}
+                        onClose={() => setIsEditModalOpen(false)}
+                        onSave={() => {
+                            setIsEditModalOpen(false);
+                            refreshEvents();
+                        }}
+                    />
                 </div>
             </div>
             <Dialog open={deleteConfirmationOpen} onClose={() => setDeleteConfirmationOpen(false)}>

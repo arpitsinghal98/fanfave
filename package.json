@@ -9,6 +9,8 @@
     "@fontsource/roboto": "^5.0.13",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
+    "@mui/styled-engine": "^5.15.14",
+    "@mui/system": "^5.15.15",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -29,6 +31,7 @@
     "react-scripts": "5.0.1",
     "react-social-icons": "^6.16.0",
     "serpapi": "^2.1.0",
+    "styled-components": "^6.1.8",
     "uuid": "^9.0.1",
     "web-vitals": "^2.1.4"
   },

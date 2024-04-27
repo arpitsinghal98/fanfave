@@ -557,6 +557,38 @@ app.delete("/api/deleteevent/:eventId", async (req, res) => {
   }
 });
 
+app.get('/api/geteventtoupdate/:id', async (req, res) => {
+
+  try {
+      const response = await esClient.get({
+          index: 'events',
+          id: req.params.id
+      });
+      res.json(response._source);
+  } catch (error) {
+      console.error('Error fetching event:', error);
+      res.status(500).send('Failed to fetch event');
+  }
+});
+
+app.put('/api/updateevent/:id', async (req, res) => {
+
+  console.log(req);
+  try {
+      await esClient.update({
+          index: 'events',
+          id: req.params.id,
+          body: {
+              doc: req.body
+          }
+      });
+      res.send('Event updated successfully');
+  } catch (error) {
+      console.error('Error updating event:', error);
+      res.status(500).send('Failed to update event');
+  }
+});
+
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
