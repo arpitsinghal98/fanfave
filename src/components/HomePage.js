@@ -19,6 +19,10 @@ const HomePage = () => {
     setModalVisible(false);
   };
 
+  const checkRole = localStorage.getItem('role') === 'Admin';
+
+  console.log(checkRole);
+
   const saveEvent = (eventData) => {
     console.log('Event Data to Save:', eventData);
     closeModal();
@@ -53,7 +57,9 @@ const HomePage = () => {
         headers: {
           'Content-Type': 'application/json'
         },
+
         body: JSON.stringify({query: searchTerm, email: email}) 
+
       });
 
       if (!response.ok) {
@@ -63,14 +69,18 @@ const HomePage = () => {
       // Handle the received events data, such as updating state or rendering them on the UI
       console.log('Events:', events);
       setEvents(events)
-      
+
     } catch (error) {
       console.error('Error Failed to search events', error);
       alert('Failed to search events');
     }
   }
-
-  
+  const handleManageEvents = () => {
+    // Logic to open event management view
+    console.log('Managing events...');
+    // For example, you might navigate to an event management page:
+    // history.push('/manage-events');
+  };
 
   // Let's assume this function will be used for fetching and displaying recommended events.
   async function getRecommendedEvents() {
@@ -83,6 +93,7 @@ const HomePage = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({interest: interests, email: email}) 
+
       });
 
       if (!response.ok) {
@@ -91,12 +102,12 @@ const HomePage = () => {
       const data = await response.json();
       console.log(data)
       setrecommend(data)
-      
+    
     } catch (error) {
       console.error('Error Failed to recommend events', error);
       alert('Failed to recommend events');
     }
-    
+
   };
 
 
@@ -107,11 +118,34 @@ const HomePage = () => {
         <div className="welcome-banner-content">
           <h1>Welcome to FanFave</h1>
           <p>Your personalized sports event guide</p>
-          <div className="add-event-button-container">
-            <button onClick={openModal} className="add-event-button">
-              Add New Event
+          <section className="search-bar-section">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search for sports events, teams, venues..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch(e);
+                }
+              }}
+            />
+          </section>
+          {checkRole && (
+            <div className="event-buttons-container">
+              <button onClick={openModal} className="event-button">
+                Add New Event
+              </button>
+              <button onClick={handleManageEvents} className="event-button">
+                Manage Events
+              </button>
+            </div>
+          )}
+
+          {!checkRole && (
+            <button onClick={handleManageEvents} className="event-button">
+              View Events
             </button>
-          </div>
+          )}
           <EventModal
             isVisible={isModalVisible}
             onClose={closeModal}
@@ -120,18 +154,6 @@ const HomePage = () => {
         </div>
       </div>
       <main>
-        <section className="search-bar-section">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search for sports events, teams, venues..."
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSearch(e);
-              }
-            }}
-          />
-        </section>
         <section className="recommended-events content-area">
           <h2>Recommended for You</h2>
           <div className="container">
