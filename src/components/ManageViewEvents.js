@@ -30,7 +30,7 @@ const ManageViewEvents = ({ show, onClose }) => {
         <div className="modal display-block">
             <div className="modal-main">
                 <button className="modal-close-button" onClick={onClose}>×</button>
-                <h2>Manage Events</h2>
+                <h2 className='modal-header'>Manage Events</h2>
                 <div className="event-cards-container">
                     {events.map((event, index) => (
                         <div key={index} className="event-card">
