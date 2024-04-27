@@ -364,6 +364,28 @@ app.get('/api/upcoming-events', async (req, res) => {
     }
 });
 
+app.get('/api/events', async (req, res) => {
+  try {
+    // Query Elasticsearch for events
+    const response = await esClient.search({
+      index: 'events', // Replace 'events_index' with your Elasticsearch index name
+      body: {
+        query: {
+          match_all: {} // Match all documents (events)
+        }
+      }
+    });
+
+    // Extract events from the Elasticsearch response
+    const events = response.hits.hits.map(hit => hit._source);
+
+    res.json({ events });
+  } catch (error) {
+    console.error('Error fetching events from Elasticsearch:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {

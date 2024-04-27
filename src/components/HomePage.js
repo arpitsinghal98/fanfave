@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import EventModal from './EventModal';
+import ManageViewEvents from './ManageViewEvents';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -7,8 +9,9 @@ const HomePage = () => {
   const [latestNews, setLatestNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [recommend, setrecommend] = useState('');
+  const [recommend, setRecommend] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isManageEventsModalVisible, setManageEventsModalVisible] = useState(false);
   const [events, setEvents] = useState([]);
 
   const openModal = () => {
@@ -17,6 +20,14 @@ const HomePage = () => {
 
   const closeModal = () => {
     setModalVisible(false);
+  };
+
+  const openManageEventsModal = () => {
+    setManageEventsModalVisible(true);
+  };
+
+  const closeManageEventsModal = () => {
+    setManageEventsModalVisible(false);
   };
 
   const checkRole = localStorage.getItem('role') === 'Admin';
@@ -71,12 +82,6 @@ const HomePage = () => {
       alert('Failed to search events');
     }
   }
-  const handleManageEvents = () => {
-    // Logic to open event management view
-    console.log('Managing events...');
-    // For example, you might navigate to an event management page:
-    // history.push('/manage-events');
-  };
 
   // Let's assume this function will be used for fetching and displaying recommended events.
   async function getRecommendedEvents() {
@@ -96,16 +101,13 @@ const HomePage = () => {
       }
       const data = await response.json();
       console.log(data)
-      setrecommend(data.response)
+      setRecommend(data.response)
 
     } catch (error) {
       console.error('Error Failed to recommend events', error);
       alert('Failed to recommend events');
     }
-
   };
-
-
 
   return (
     <div className="homepage-container">
@@ -130,14 +132,14 @@ const HomePage = () => {
               <button onClick={openModal} className="event-button">
                 Add New Event
               </button>
-              <button onClick={handleManageEvents} className="event-button">
+              <button onClick={openManageEventsModal} className="event-button">
                 Manage Events
               </button>
             </div>
           )}
 
           {!checkRole && (
-            <button onClick={handleManageEvents} className="event-button">
+            <button onClick={openManageEventsModal} className="event-button">
               View Events
             </button>
           )}
@@ -146,15 +148,16 @@ const HomePage = () => {
             onClose={closeModal}
             onSave={saveEvent}
           />
+          <ManageViewEvents
+                show={isManageEventsModalVisible}
+                onClose={closeManageEventsModal}
+            />
         </div>
       </div>
       <main>
         <section className="recommended-events content-area">
-          <h2>Recommended for You</h2>
+          <Link onClick={getRecommendedEvents}><h2>Recommendations for You</h2></Link>
           <div className="container">
-            <button onClick={getRecommendedEvents} className="fetch-button">
-              Recommend Personalized Sports Events
-            </button>
             <div className="response-box">
               <p>{recommend}</p>
             </div>
